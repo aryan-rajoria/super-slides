@@ -1,0 +1,387 @@
+{
+ "t02": {
+  "file": "assets/t02.png",
+  "w": 1040,
+  "h": 112
+ },
+ "t03": {
+  "file": "assets/t03.png",
+  "w": 1712,
+  "h": 112
+ },
+ "t04": {
+  "file": "assets/t04.png",
+  "w": 2000,
+  "h": 112
+ },
+ "t05": {
+  "file": "assets/t05.png",
+  "w": 1328,
+  "h": 112
+ },
+ "t06": {
+  "file": "assets/t06.png",
+  "w": 1712,
+  "h": 112
+ },
+ "t07": {
+  "file": "assets/t07.png",
+  "w": 2000,
+  "h": 112
+ },
+ "t08": {
+  "file": "assets/t08.png",
+  "w": 1808,
+  "h": 112
+ },
+ "t09": {
+  "file": "assets/t09.png",
+  "w": 1520,
+  "h": 112
+ },
+ "t10": {
+  "file": "assets/t10.png",
+  "w": 1616,
+  "h": 112
+ },
+ "t11": {
+  "file": "assets/t11.png",
+  "w": 1808,
+  "h": 112
+ },
+ "t12": {
+  "file": "assets/t12.png",
+  "w": 1712,
+  "h": 112
+ },
+ "k02": {
+  "file": "assets/k02.png",
+  "w": 616,
+  "h": 56
+ },
+ "k03": {
+  "file": "assets/k03.png",
+  "w": 520,
+  "h": 56
+ },
+ "k04": {
+  "file": "assets/k04.png",
+  "w": 1048,
+  "h": 56
+ },
+ "k05": {
+  "file": "assets/k05.png",
+  "w": 808,
+  "h": 56
+ },
+ "k06": {
+  "file": "assets/k06.png",
+  "w": 856,
+  "h": 56
+ },
+ "k07": {
+  "file": "assets/k07.png",
+  "w": 856,
+  "h": 56
+ },
+ "k08": {
+  "file": "assets/k08.png",
+  "w": 856,
+  "h": 56
+ },
+ "k09": {
+  "file": "assets/k09.png",
+  "w": 520,
+  "h": 56
+ },
+ "k10": {
+  "file": "assets/k10.png",
+  "w": 904,
+  "h": 56
+ },
+ "k11": {
+  "file": "assets/k11.png",
+  "w": 472,
+  "h": 56
+ },
+ "wordmark": {
+  "file": "assets/wordmark.png",
+  "w": 1392,
+  "h": 168
+ },
+ "pi_blue": {
+  "file": "assets/pi_blue.png",
+  "w": 324,
+  "h": 396
+ },
+ "pi_white": {
+  "file": "assets/pi_white.png",
+  "w": 260,
+  "h": 364
+ },
+ "man_runA": {
+  "file": "assets/man_runA.png",
+  "w": 36,
+  "h": 60
+ },
+ "man_runB": {
+  "file": "assets/man_runB.png",
+  "w": 36,
+  "h": 60
+ },
+ "man_jump": {
+  "file": "assets/man_jump.png",
+  "w": 36,
+  "h": 60
+ },
+ "man_idle": {
+  "file": "assets/man_idle.png",
+  "w": 36,
+  "h": 60
+ },
+ "heart_full": {
+  "file": "assets/heart_full.png",
+  "w": 21,
+  "h": 18
+ },
+ "heart_empty": {
+  "file": "assets/heart_empty.png",
+  "w": 21,
+  "h": 18
+ },
+ "cactus": {
+  "file": "assets/cactus.png",
+  "w": 24,
+  "h": 30
+ },
+ "rock": {
+  "file": "assets/rock.png",
+  "w": 30,
+  "h": 15
+ },
+ "sign_coffee": {
+  "file": "assets/sign_coffee.png",
+  "w": 153,
+  "h": 48
+ },
+ "sign_nocoffee": {
+  "file": "assets/sign_nocoffee.png",
+  "w": 171,
+  "h": 48
+ },
+ "sign_closed": {
+  "file": "assets/sign_closed.png",
+  "w": 117,
+  "h": 48
+ },
+ "bush": {
+  "file": "assets/bush.png",
+  "w": 30,
+  "h": 18
+ },
+ "cloud1": {
+  "file": "assets/cloud1.png",
+  "w": 36,
+  "h": 15
+ },
+ "cloud2": {
+  "file": "assets/cloud2.png",
+  "w": 30,
+  "h": 12
+ },
+ "sun": {
+  "file": "assets/sun.png",
+  "w": 27,
+  "h": 27
+ },
+ "moon": {
+  "file": "assets/moon.png",
+  "w": 24,
+  "h": 24
+ },
+ "skyline_day": {
+  "file": "assets/skyline_day.png",
+  "w": 2560,
+  "h": 48
+ },
+ "skyline_night": {
+  "file": "assets/skyline_night.png",
+  "w": 2560,
+  "h": 48
+ },
+ "machine_off": {
+  "file": "assets/machine_off.png",
+  "w": 60,
+  "h": 66
+ },
+ "machine_on": {
+  "file": "assets/machine_on.png",
+  "w": 60,
+  "h": 66
+ },
+ "machine_done": {
+  "file": "assets/machine_done.png",
+  "w": 60,
+  "h": 66
+ },
+ "steam1": {
+  "file": "assets/steam1.png",
+  "w": 15,
+  "h": 15
+ },
+ "steam2": {
+  "file": "assets/steam2.png",
+  "w": 15,
+  "h": 15
+ },
+ "ty_title": {
+  "file": "assets/ty_title.png",
+  "w": 1560,
+  "h": 210
+ },
+ "ty_kicker": {
+  "file": "assets/ty_kicker.png",
+  "w": 1576,
+  "h": 56
+ },
+ "coffee_acquired": {
+  "file": "assets/coffee_acquired.png",
+  "w": 712,
+  "h": 56
+ },
+ "quest_tag": {
+  "file": "assets/quest_tag.png",
+  "w": 213,
+  "h": 21
+ },
+ "score_day_01": {
+  "file": "assets/score_day_01.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_night_01": {
+  "file": "assets/score_night_01.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_day_02": {
+  "file": "assets/score_day_02.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_night_02": {
+  "file": "assets/score_night_02.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_day_03": {
+  "file": "assets/score_day_03.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_night_03": {
+  "file": "assets/score_night_03.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_day_04": {
+  "file": "assets/score_day_04.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_night_04": {
+  "file": "assets/score_night_04.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_day_05": {
+  "file": "assets/score_day_05.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_night_05": {
+  "file": "assets/score_night_05.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_day_06": {
+  "file": "assets/score_day_06.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_night_06": {
+  "file": "assets/score_night_06.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_day_07": {
+  "file": "assets/score_day_07.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_night_07": {
+  "file": "assets/score_night_07.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_day_08": {
+  "file": "assets/score_day_08.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_night_08": {
+  "file": "assets/score_night_08.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_day_09": {
+  "file": "assets/score_day_09.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_night_09": {
+  "file": "assets/score_night_09.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_day_10": {
+  "file": "assets/score_day_10.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_night_10": {
+  "file": "assets/score_night_10.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_day_11": {
+  "file": "assets/score_day_11.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_night_11": {
+  "file": "assets/score_night_11.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_day_12": {
+  "file": "assets/score_day_12.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_night_12": {
+  "file": "assets/score_night_12.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_day_13": {
+  "file": "assets/score_day_13.png",
+  "w": 130,
+  "h": 14
+ },
+ "score_night_13": {
+  "file": "assets/score_night_13.png",
+  "w": 130,
+  "h": 14
+ }
+}

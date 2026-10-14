@@ -1,0 +1,398 @@
+{
+ "c16/man_idle": {
+  "w": 13,
+  "h": 16
+ },
+ "c16/man_runA": {
+  "w": 13,
+  "h": 16
+ },
+ "c16/man_runB": {
+  "w": 13,
+  "h": 16
+ },
+ "c16/man_jump": {
+  "w": 13,
+  "h": 16
+ },
+ "c16/cactus": {
+  "w": 7,
+  "h": 9
+ },
+ "c16/rock": {
+  "w": 8,
+  "h": 4
+ },
+ "c16/heart_full": {
+  "w": 6,
+  "h": 6
+ },
+ "c16/heart_empty": {
+  "w": 6,
+  "h": 6
+ },
+ "c16/cloud1": {
+  "w": 8,
+  "h": 4
+ },
+ "c16/cloud2": {
+  "w": 6,
+  "h": 3
+ },
+ "c16/skyline_day": {
+  "w": 74,
+  "h": 20
+ },
+ "c16/machine_off": {
+  "w": 24,
+  "h": 45
+ },
+ "c16/machine_on": {
+  "w": 24,
+  "h": 45
+ },
+ "c16/machine_done": {
+  "w": 24,
+  "h": 45
+ },
+ "c16/chest": {
+  "w": 8,
+  "h": 6
+ },
+ "c16/steam1": {
+  "w": 4,
+  "h": 4
+ },
+ "c16/steam2": {
+  "w": 4,
+  "h": 4
+ },
+ "c13/man_idle": {
+  "w": 11,
+  "h": 13
+ },
+ "c13/man_runA": {
+  "w": 11,
+  "h": 13
+ },
+ "c13/man_runB": {
+  "w": 11,
+  "h": 13
+ },
+ "c13/man_jump": {
+  "w": 11,
+  "h": 13
+ },
+ "c13/cactus": {
+  "w": 6,
+  "h": 7
+ },
+ "c13/rock": {
+  "w": 8,
+  "h": 4
+ },
+ "c13/heart_full": {
+  "w": 6,
+  "h": 6
+ },
+ "c13/heart_empty": {
+  "w": 6,
+  "h": 6
+ },
+ "c13/cloud1": {
+  "w": 8,
+  "h": 4
+ },
+ "c13/cloud2": {
+  "w": 6,
+  "h": 3
+ },
+ "c13/skyline_day": {
+  "w": 63,
+  "h": 17
+ },
+ "c13/machine_off": {
+  "w": 24,
+  "h": 45
+ },
+ "c13/machine_on": {
+  "w": 24,
+  "h": 45
+ },
+ "c13/machine_done": {
+  "w": 24,
+  "h": 45
+ },
+ "c13/chest": {
+  "w": 8,
+  "h": 6
+ },
+ "c13/steam1": {
+  "w": 4,
+  "h": 4
+ },
+ "c13/steam2": {
+  "w": 4,
+  "h": 4
+ },
+ "c11/man_idle": {
+  "w": 9,
+  "h": 11
+ },
+ "c11/man_runA": {
+  "w": 9,
+  "h": 11
+ },
+ "c11/man_runB": {
+  "w": 9,
+  "h": 11
+ },
+ "c11/man_jump": {
+  "w": 9,
+  "h": 11
+ },
+ "c11/cactus": {
+  "w": 5,
+  "h": 6
+ },
+ "c11/rock": {
+  "w": 6,
+  "h": 3
+ },
+ "c11/heart_full": {
+  "w": 6,
+  "h": 6
+ },
+ "c11/heart_empty": {
+  "w": 6,
+  "h": 6
+ },
+ "c11/cloud1": {
+  "w": 8,
+  "h": 4
+ },
+ "c11/cloud2": {
+  "w": 6,
+  "h": 3
+ },
+ "c11/skyline_day": {
+  "w": 55,
+  "h": 15
+ },
+ "c11/machine_off": {
+  "w": 24,
+  "h": 45
+ },
+ "c11/machine_on": {
+  "w": 24,
+  "h": 45
+ },
+ "c11/machine_done": {
+  "w": 24,
+  "h": 45
+ },
+ "c11/chest": {
+  "w": 8,
+  "h": 6
+ },
+ "c11/steam1": {
+  "w": 4,
+  "h": 4
+ },
+ "c11/steam2": {
+  "w": 4,
+  "h": 4
+ },
+ "c9/man_idle": {
+  "w": 7,
+  "h": 9
+ },
+ "c9/man_runA": {
+  "w": 7,
+  "h": 9
+ },
+ "c9/man_runB": {
+  "w": 7,
+  "h": 9
+ },
+ "c9/man_jump": {
+  "w": 7,
+  "h": 9
+ },
+ "c9/cactus": {
+  "w": 4,
+  "h": 5
+ },
+ "c9/rock": {
+  "w": 6,
+  "h": 3
+ },
+ "c9/heart_full": {
+  "w": 6,
+  "h": 6
+ },
+ "c9/heart_empty": {
+  "w": 6,
+  "h": 6
+ },
+ "c9/cloud1": {
+  "w": 8,
+  "h": 4
+ },
+ "c9/cloud2": {
+  "w": 6,
+  "h": 3
+ },
+ "c9/skyline_day": {
+  "w": 48,
+  "h": 13
+ },
+ "c9/machine_off": {
+  "w": 24,
+  "h": 45
+ },
+ "c9/machine_on": {
+  "w": 24,
+  "h": 45
+ },
+ "c9/machine_done": {
+  "w": 24,
+  "h": 45
+ },
+ "c9/chest": {
+  "w": 8,
+  "h": 6
+ },
+ "c9/steam1": {
+  "w": 4,
+  "h": 4
+ },
+ "c9/steam2": {
+  "w": 4,
+  "h": 4
+ },
+ "c7/man_idle": {
+  "w": 6,
+  "h": 7
+ },
+ "c7/man_runA": {
+  "w": 6,
+  "h": 7
+ },
+ "c7/man_runB": {
+  "w": 6,
+  "h": 7
+ },
+ "c7/man_jump": {
+  "w": 6,
+  "h": 7
+ },
+ "c7/cactus": {
+  "w": 3,
+  "h": 4
+ },
+ "c7/rock": {
+  "w": 4,
+  "h": 2
+ },
+ "c7/heart_full": {
+  "w": 6,
+  "h": 6
+ },
+ "c7/heart_empty": {
+  "w": 6,
+  "h": 6
+ },
+ "c7/cloud1": {
+  "w": 8,
+  "h": 4
+ },
+ "c7/cloud2": {
+  "w": 6,
+  "h": 3
+ },
+ "c7/skyline_day": {
+  "w": 41,
+  "h": 11
+ },
+ "c7/machine_off": {
+  "w": 24,
+  "h": 45
+ },
+ "c7/machine_on": {
+  "w": 24,
+  "h": 45
+ },
+ "c7/machine_done": {
+  "w": 24,
+  "h": 45
+ },
+ "c7/chest": {
+  "w": 8,
+  "h": 6
+ },
+ "c7/steam1": {
+  "w": 4,
+  "h": 4
+ },
+ "c7/steam2": {
+  "w": 4,
+  "h": 4
+ },
+ "text/ck": {
+  "w": 155,
+  "h": 7
+ },
+ "text/ct01": {
+  "w": 89,
+  "h": 7
+ },
+ "text/ct02": {
+  "w": 89,
+  "h": 7
+ },
+ "text/ct03": {
+  "w": 89,
+  "h": 7
+ },
+ "text/ct04": {
+  "w": 83,
+  "h": 7
+ },
+ "text/ct05": {
+  "w": 83,
+  "h": 7
+ },
+ "text/ct06": {
+  "w": 53,
+  "h": 7
+ },
+ "text/cscore_01": {
+  "w": 53,
+  "h": 7
+ },
+ "text/cscore_02": {
+  "w": 53,
+  "h": 7
+ },
+ "text/cscore_03": {
+  "w": 53,
+  "h": 7
+ },
+ "text/cscore_04": {
+  "w": 53,
+  "h": 7
+ },
+ "text/cscore_05": {
+  "w": 53,
+  "h": 7
+ },
+ "text/cscore_06": {
+  "w": 53,
+  "h": 7
+ },
+ "text/cbanner": {
+  "w": 89,
+  "h": 7
+ }
+}

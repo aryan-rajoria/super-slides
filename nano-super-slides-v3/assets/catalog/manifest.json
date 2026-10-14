@@ -1,0 +1,370 @@
+{
+ "catalog/run/r01_idle.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r01_runA.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r01_runB.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r02_idle.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r02_runA.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r02_runB.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r03_idle.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r03_runA.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r03_runB.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r04_idle.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r04_runA.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r04_runB.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r05_idle.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r05_runA.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r05_runB.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r06_idle.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r06_runA.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r06_runB.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r07_idle.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r07_runA.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r07_runB.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r08_idle.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r08_runA.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r08_runB.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r09_idle.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r09_runA.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r09_runB.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r10_idle.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r10_runA.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/run/r10_runB.png": {
+  "w": 13,
+  "h": 16
+ },
+ "catalog/machine/m01.png": {
+  "w": 20,
+  "h": 26
+ },
+ "catalog/machine/m02.png": {
+  "w": 18,
+  "h": 20
+ },
+ "catalog/machine/m03.png": {
+  "w": 16,
+  "h": 30
+ },
+ "catalog/machine/m04.png": {
+  "w": 14,
+  "h": 23
+ },
+ "catalog/machine/m05.png": {
+  "w": 16,
+  "h": 26
+ },
+ "catalog/machine/m06.png": {
+  "w": 12,
+  "h": 23
+ },
+ "catalog/machine/m07.png": {
+  "w": 10,
+  "h": 28
+ },
+ "catalog/machine/m08.png": {
+  "w": 24,
+  "h": 27
+ },
+ "catalog/chest/c01_ink.png": {
+  "w": 16,
+  "h": 12
+ },
+ "catalog/chest/c01_col.png": {
+  "w": 16,
+  "h": 12
+ },
+ "catalog/chest/c01_ink_open.png": {
+  "w": 16,
+  "h": 16
+ },
+ "catalog/chest/c01_col_open.png": {
+  "w": 16,
+  "h": 16
+ },
+ "catalog/chest/c02_ink.png": {
+  "w": 16,
+  "h": 12
+ },
+ "catalog/chest/c02_col.png": {
+  "w": 16,
+  "h": 12
+ },
+ "catalog/chest/c02_ink_open.png": {
+  "w": 16,
+  "h": 16
+ },
+ "catalog/chest/c02_col_open.png": {
+  "w": 16,
+  "h": 16
+ },
+ "catalog/chest/c03_ink.png": {
+  "w": 16,
+  "h": 12
+ },
+ "catalog/chest/c03_col.png": {
+  "w": 16,
+  "h": 12
+ },
+ "catalog/chest/c03_ink_open.png": {
+  "w": 16,
+  "h": 16
+ },
+ "catalog/chest/c03_col_open.png": {
+  "w": 16,
+  "h": 16
+ },
+ "catalog/chest/c04_ink.png": {
+  "w": 16,
+  "h": 12
+ },
+ "catalog/chest/c04_col.png": {
+  "w": 16,
+  "h": 12
+ },
+ "catalog/chest/c04_ink_open.png": {
+  "w": 16,
+  "h": 16
+ },
+ "catalog/chest/c04_col_open.png": {
+  "w": 16,
+  "h": 16
+ },
+ "catalog/chest/c05_ink.png": {
+  "w": 16,
+  "h": 12
+ },
+ "catalog/chest/c05_col.png": {
+  "w": 16,
+  "h": 12
+ },
+ "catalog/chest/c06_ink.png": {
+  "w": 16,
+  "h": 12
+ },
+ "catalog/chest/c06_col.png": {
+  "w": 16,
+  "h": 12
+ },
+ "catalog/chest/c07_ink.png": {
+  "w": 10,
+  "h": 7
+ },
+ "catalog/chest/c07_col.png": {
+  "w": 10,
+  "h": 7
+ },
+ "catalog/chest/c08_ink.png": {
+  "w": 16,
+  "h": 14
+ },
+ "catalog/chest/c08_col.png": {
+  "w": 16,
+  "h": 14
+ },
+ "catalog/text/tk.png": {
+  "w": 167,
+  "h": 7
+ },
+ "catalog/text/tt01.png": {
+  "w": 95,
+  "h": 7
+ },
+ "catalog/text/tt02.png": {
+  "w": 101,
+  "h": 7
+ },
+ "catalog/text/tt03.png": {
+  "w": 89,
+  "h": 7
+ },
+ "catalog/text/lr01.png": {
+  "w": 77,
+  "h": 7
+ },
+ "catalog/text/lr02.png": {
+  "w": 59,
+  "h": 7
+ },
+ "catalog/text/lr03.png": {
+  "w": 59,
+  "h": 7
+ },
+ "catalog/text/lr04.png": {
+  "w": 59,
+  "h": 7
+ },
+ "catalog/text/lr05.png": {
+  "w": 35,
+  "h": 7
+ },
+ "catalog/text/lr06.png": {
+  "w": 53,
+  "h": 7
+ },
+ "catalog/text/lr07.png": {
+  "w": 35,
+  "h": 7
+ },
+ "catalog/text/lr08.png": {
+  "w": 53,
+  "h": 7
+ },
+ "catalog/text/lr09.png": {
+  "w": 53,
+  "h": 7
+ },
+ "catalog/text/lr10.png": {
+  "w": 35,
+  "h": 7
+ },
+ "catalog/text/lm01.png": {
+  "w": 71,
+  "h": 7
+ },
+ "catalog/text/lm02.png": {
+  "w": 71,
+  "h": 7
+ },
+ "catalog/text/lm03.png": {
+  "w": 71,
+  "h": 7
+ },
+ "catalog/text/lm04.png": {
+  "w": 47,
+  "h": 7
+ },
+ "catalog/text/lm05.png": {
+  "w": 53,
+  "h": 7
+ },
+ "catalog/text/lm06.png": {
+  "w": 71,
+  "h": 7
+ },
+ "catalog/text/lm07.png": {
+  "w": 77,
+  "h": 7
+ },
+ "catalog/text/lm08.png": {
+  "w": 65,
+  "h": 7
+ },
+ "catalog/text/lc01.png": {
+  "w": 41,
+  "h": 7
+ },
+ "catalog/text/lc02.png": {
+  "w": 71,
+  "h": 7
+ },
+ "catalog/text/lc03.png": {
+  "w": 59,
+  "h": 7
+ },
+ "catalog/text/lc04.png": {
+  "w": 41,
+  "h": 7
+ },
+ "catalog/text/lc05.png": {
+  "w": 29,
+  "h": 7
+ },
+ "catalog/text/lc06.png": {
+  "w": 29,
+  "h": 7
+ },
+ "catalog/text/lc07.png": {
+  "w": 59,
+  "h": 7
+ },
+ "catalog/text/lc08.png": {
+  "w": 53,
+  "h": 7
+ }
+}
