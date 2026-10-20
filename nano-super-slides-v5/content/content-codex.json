@@ -1,0 +1,189 @@
+{
+  "harness": "codex",
+  "name": "CODEX",
+  "version": "RUST-V0.163.0",
+  "accentKey": "codex",
+  "intro": {
+    "what": "OpenAI's open-source Rust terminal coding agent; one ~/.codex config shared by CLI, desktop, IDE.",
+    "trust": "Three sandbox modes + approval_policy (incl. granular); project .codex/ layers stay inert until trusted."
+  },
+  "slides": [
+    {
+      "group": 1,
+      "title": "SKILLS & COMMANDS",
+      "cards": [
+        {
+          "topic": "SKILLS",
+          "what": "Reusable instruction folders Codex auto-discovers and loads on demand.",
+          "where": ".agents/skills · ~/.agents/skills · /etc/codex/skills",
+          "format": "SKILL.md + agents/openai.yaml sidecar (interface, policy)",
+          "manage": "/skills · $skill-installer · [[skills.config]] + restart",
+          "autoupdate": "No. $skill-installer installs once; update = re-copy dir; restart required.",
+          "verdict": "OVERLAY",
+          "why": "Spec-pure SKILL.md works; openai.yaml is Codex-only metadata",
+          "emission": [
+            "install.codex: copy → ~/.agents/skills/<n>/",
+            "sidecar: agents/openai.yaml (interface, policy)",
+            "opt: [[skills.config]] path=<p> in config.toml"
+          ]
+        },
+        {
+          "topic": "COMMANDS",
+          "what": "Custom prompt templates as slash commands; deprecated for skills.",
+          "where": "~/.codex/prompts/ (user-only, flat md files)",
+          "format": "*.md + frontmatter description, argument-hint",
+          "manage": "/prompts:<name> · file drop + restart",
+          "autoupdate": "No. Manual file edits in ~/.codex/prompts/ only; nothing auto-updates.",
+          "verdict": "COPY-AS-IS",
+          "why": "Same md drops in; deprecated + user-only → warn",
+          "emission": [
+            "install.codex: copy <n>.md → ~/.codex/prompts/",
+            "invoke: /prompts:<n> (restart; user-only)",
+            "warn: DEPRECATED — prefer skill artifact"
+          ]
+        }
+      ]
+    },
+    {
+      "group": 2,
+      "title": "SUBAGENTS & HOOKS",
+      "cards": [
+        {
+          "topic": "SUBAGENTS",
+          "what": "Named helper agents with own model settings; spawned via natural language.",
+          "where": ".codex/agents/*.toml (project, trusted) · ~/.codex/agents/",
+          "format": "TOML; required name, description, developer_instructions",
+          "manage": "/subagents · file drop; project layer needs trust",
+          "autoupdate": "No. Manual TOML file edits only; nothing auto-updates agent files.",
+          "verdict": "TRANSLATE",
+          "why": "Translate: agent md frontmatter → Codex TOML",
+          "emission": [
+            "translate: agent .md → .codex/agents/<n>.toml",
+            "fields: name, description, developer_instructions",
+            "cannot raise parent sandbox/approval (inherited)"
+          ]
+        },
+        {
+          "topic": "HOOKS",
+          "what": "Event handlers (command or MCP tool) fired on 12 lifecycle events.",
+          "where": "~/.codex/hooks.json · .codex/hooks.json (trusted) · plugins",
+          "format": "hooks.json, Claude-Code shape; 12 events; TOML [hooks]",
+          "manage": "file drop; [features] hooks · project needs trust",
+          "autoupdate": "No. Manual edits to hooks.json/[hooks]; plugin hooks await user review.",
+          "verdict": "COPY-AS-IS",
+          "why": "Same JSON as Claude Code; drop/merge, trust-gated",
+          "emission": [
+            "install.codex: merge → ~/.codex/hooks.json",
+            "layers merge additively; CLAUDE_PLUGIN_ROOT env",
+            "gate: project layer + plugin hooks need trust/review"
+          ]
+        }
+      ]
+    },
+    {
+      "group": 3,
+      "title": "PLUGINS & MARKETPLACES",
+      "cards": [
+        {
+          "topic": "PLUGINS",
+          "what": "Bundles of skills + MCP servers + hooks installable from marketplaces.",
+          "where": "marketplace: .agents/plugins/ (repo) · ~/.agents/ (user)",
+          "format": "plugin.json (agent-plugins 1.0.0) + .codex-plugin overlay",
+          "manage": "/plugins · codex plugin marketplace add|list|upgrade|remove",
+          "autoupdate": "Yes — the only auto-update: codex plugin marketplace upgrade",
+          "verdict": "OVERLAY",
+          "why": "Portable plugin.json + .codex-plugin overlay + catalog entry",
+          "emission": [
+            "emit: plugin.json + skills/ + mcp.json + overlay",
+            "catalog: .agents/plugins/marketplace.json entry",
+            "install: codex plugin marketplace add <src>"
+          ]
+        }
+      ]
+    },
+    {
+      "group": 4,
+      "title": "MCP · LSP · CUSTOM TOOLS",
+      "cards": [
+        {
+          "topic": "MCP",
+          "what": "External tool servers (stdio/HTTP) in TOML; per-tool approval modes.",
+          "where": "~/.codex/config.toml · .codex/config.toml · plugin .mcp.json",
+          "format": "[mcp_servers.<id>] TOML: command/args/env or url/auth",
+          "manage": "codex mcp add <id> -- <cmd>|--url · codex mcp list · /mcp",
+          "autoupdate": "No. Manual codex mcp add / TOML edits only.",
+          "verdict": "TRANSLATE",
+          "why": "Translate: mcpServers JSON → [mcp_servers] TOML",
+          "emission": [
+            "translate: mcpServers JSON → [mcp_servers.<id>]",
+            "install: codex mcp add <id> -- <cmd>|--url",
+            "per-tool: tools.<t>.approval_mode in TOML"
+          ]
+        },
+        {
+          "topic": "LSP",
+          "what": "No language-server surface — LSP absent from Codex docs entirely.",
+          "where": "—",
+          "format": "—",
+          "manage": "—",
+          "autoupdate": "N/A — no artifact exists to update.",
+          "verdict": "NO SURFACE",
+          "why": "absent from codex.md as of rust-v0.163.0, 2026-10",
+          "emission": [
+            "compat.harnesses.codex.supported = false",
+            "surfaces: [] · via: []"
+          ]
+        },
+        {
+          "topic": "CUSTOM TOOLS",
+          "what": "No custom-tool registration; only [tools]/[tool_suggest] toggles.",
+          "where": "—",
+          "format": "—",
+          "manage": "—",
+          "autoupdate": "N/A — no artifact exists to update.",
+          "verdict": "NO SURFACE",
+          "why": "only [tools]/[tool_suggest] toggles; rust-v0.163.0, 2026-10",
+          "emission": [
+            "compat.harnesses.codex.supported = false",
+            "surfaces: [] · via: []"
+          ]
+        }
+      ]
+    },
+    {
+      "group": 5,
+      "title": "STATUS LINE & EXEC POLICY",
+      "cards": [
+        {
+          "topic": "STATUS LINE",
+          "what": "No status-line surface — closest is [tui] notification keys in config.",
+          "where": "—",
+          "format": "—",
+          "manage": "—",
+          "autoupdate": "N/A — no artifact exists to update.",
+          "verdict": "NO SURFACE",
+          "why": "only [tui] notifications; rust-v0.163.0, 2026-10",
+          "emission": [
+            "compat.harnesses.codex.supported = false",
+            "surfaces: [] · via: []"
+          ]
+        },
+        {
+          "topic": "EXEC POLICY",
+          "what": "Declarative sandbox, approvals, permission profiles, Starlark cmd rules.",
+          "where": "config.toml · rules/*.rules · /etc/codex/requirements.toml",
+          "format": "TOML sections + Starlark prefix_rule() .rules files",
+          "manage": "codex execpolicy check --rules … -- <cmd> · codex exec --json",
+          "autoupdate": "No. Policy = static config/rule files; admins pin via requirements.toml.",
+          "verdict": "COPY-AS-IS",
+          "why": ".rules drop verbatim; record declares sandbox+approval needs",
+          "emission": [
+            "compat.requires → sandbox_mode + network_access",
+            "emit: rules/<name>.rules prefix_rule(allow|prompt)",
+            "validate: codex execpolicy check -- <cmd>"
+          ]
+        }
+      ]
+    }
+  ]
+}

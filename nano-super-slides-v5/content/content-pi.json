@@ -1,0 +1,191 @@
+{
+  "harness": "pi",
+  "name": "PI",
+  "version": "1.3.0",
+  "accentKey": "pi",
+  "intro": {
+    "what": "Minimal terminal-first open-source coding-agent CLI by Mario Zechner (Earendil)",
+    "trust": "No permission system or sandbox (YOLO mode) — .pi/ resources gated by project trust; codemode QuickJS sandbox"
+  },
+  "slides": [
+    {
+      "group": 1,
+      "title": "SKILLS & COMMANDS",
+      "cards": [
+        {
+          "topic": "SKILLS",
+          "what": "Folders of instructions the agent discovers and reads only when needed",
+          "where": "~/.pi/agent/skills · ~/.agents/skills · .pi/skills",
+          "format": "SKILL.md dir; Agent Skills spec YAML frontmatter",
+          "manage": "/skill:<name> · enableSkillCommands · !glob/+path filters",
+          "autoupdate": "In pi packages: pi update --extensions; standalone dirs manual",
+          "verdict": "COPY-AS-IS",
+          "why": "Same agentskills.io spec; un-gated drop into ~/.agents/skills",
+          "emission": [
+            "install.pi: pi install npm:<pkg>@<ver>",
+            "alt: copy-dir → ~/.agents/skills/<name>/",
+            "lockfile: .pi/settings.json (project)"
+          ]
+        },
+        {
+          "topic": "COMMANDS",
+          "what": "Markdown prompt templates; the filename becomes the slash command",
+          "where": "~/.pi/agent/prompts · .pi/prompts (trust-gated)",
+          "format": ".md + frontmatter description/argument-hint; $1..$n args",
+          "manage": "filename = command: review.md → /review · /reload",
+          "autoupdate": "In-package prompts update with pi update; standalone files manual",
+          "verdict": "COPY-AS-IS",
+          "why": "Same md+frontmatter shape; filename is the command",
+          "emission": [
+            "install.pi: copy <name>.md → ~/.pi/agent/prompts/",
+            "cmd: /<filename> · args $1..$n ${1:-default}",
+            "lockfile: agentreg.lock (urn→ver→sha→target)"
+          ]
+        }
+      ]
+    },
+    {
+      "group": 2,
+      "title": "SUBAGENTS & HOOKS",
+      "cards": [
+        {
+          "topic": "SUBAGENTS",
+          "what": "No built-in subagents; an official example extension adds markdown agents",
+          "where": "~/.pi/agent/agents · .pi/agents (via example ext)",
+          "format": "agent .md + frontmatter name/description/tools/model",
+          "manage": "install subagent example extension (symlink per README)",
+          "autoupdate": "Only via npm package pi update; core ships no subagent surface",
+          "verdict": "NO SURFACE",
+          "why": "Example-level pattern, not core; promotion UNVERIFIED",
+          "emission": [
+            "compatibility.pi: supported=false (example-only)",
+            "if emitted: copy md + install subagent ext",
+            "tier: review (ships extension code)"
+          ]
+        },
+        {
+          "topic": "HOOKS",
+          "what": "No hooks files; extension code subscribes to agent lifecycle events",
+          "where": "~/.pi/agent/extensions · .pi/extensions (trust-gated)",
+          "format": "TS/JS module: export default (pi) => pi.on(event, fn)",
+          "manage": "pi install npm:<pkg> · pi -e ./ext.ts · /reload",
+          "autoupdate": "Extension packages update via pi update --extensions; loose .ts manual",
+          "verdict": "TRANSLATE",
+          "why": "Codegen: hook spec → TS extension calling pi.on()",
+          "emission": [
+            "gen: ~/.pi/agent/extensions/agentreg-<n>.ts",
+            "events: tool_call, tool_result, turn_end...",
+            "tier: review (runs in-process, full OS)"
+          ]
+        }
+      ]
+    },
+    {
+      "group": 3,
+      "title": "PLUGINS & MARKETPLACES",
+      "cards": [
+        {
+          "topic": "PLUGINS",
+          "what": "Bundles ship as npm packages: extensions, skills, prompts, themes",
+          "where": "~/.pi/agent/npm · settings.json · .pi/settings.json",
+          "format": "package.json + pi-package keyword + pi key globs",
+          "manage": "pi install npm:|git:|path · pi list · pi remove · pi update",
+          "autoupdate": "Yes — pi update [--extensions] bumps installed packages + contents",
+          "verdict": "TRANSLATE",
+          "why": "Must republish as npm; npm IS Pi's registry",
+          "emission": [
+            "install.pi: pi install npm:<pkg>@<semver>",
+            "mirror: npm content-only, no lifecycle scripts",
+            "lockfile: .pi/settings.json packages[]"
+          ]
+        }
+      ]
+    },
+    {
+      "group": 4,
+      "title": "MCP · LSP · CUSTOM TOOLS",
+      "cards": [
+        {
+          "topic": "MCP",
+          "what": "External tool servers Pi connects to; config copies straight from Claude",
+          "where": "~/.pi/agent/mcp.json · .pi/mcp.json (trust-gated)",
+          "format": "mcpServers JSON; stdio cmd/args/env | http url/headers/oauth",
+          "manage": "pi mcp add <name> [--local] -- cmd · /mcp login",
+          "autoupdate": "Manual — pi mcp add or config edit; no server-entry update flow",
+          "verdict": "COPY-AS-IS",
+          "why": "Claude/Cursor mcp.json entries copy as-is (official docs)",
+          "emission": [
+            "install.pi: merge entry → ~/.pi/agent/mcp.json",
+            "alt: pi mcp add <name> --local -- cmd args",
+            "tools: mcp__<server>__<tool>; SSE rejected"
+          ]
+        },
+        {
+          "topic": "LSP",
+          "what": "Not available — Pi has no language-server integration as of 1.3.0",
+          "where": "none",
+          "format": "n/a",
+          "manage": "n/a",
+          "autoupdate": "No — nothing to update; no LSP surface exists in Pi 1.3.0",
+          "verdict": "NO SURFACE",
+          "why": "Absent from pi.md; no native surface as of 1.3.0",
+          "emission": [
+            "compatibility.pi: supported=false",
+            "install.pi: none — emitter skips Pi"
+          ]
+        },
+        {
+          "topic": "CUSTOM TOOLS",
+          "what": "Richest API: extensions register tools, commands, providers, events in TS",
+          "where": "~/.pi/agent/extensions · .pi/extensions (trust-gated)",
+          "format": "TS module; pi.registerTool(TypeBox schema, exposure)",
+          "manage": "pi install npm:<pkg> · pi -e ./tool.ts · /reload",
+          "autoupdate": "Yes when packaged — pi update --extensions; loose .ts drops manual",
+          "verdict": "TRANSLATE",
+          "why": "Tool spec must codegen to a TS pi.registerTool module",
+          "emission": [
+            "gen: ext with pi.registerTool(TypeBox schema)",
+            "exposure: direct|model-only|codemode|deferred",
+            "tier: review — code runs in-process"
+          ]
+        }
+      ]
+    },
+    {
+      "group": 5,
+      "title": "STATUS LINE & EXEC POLICY",
+      "cards": [
+        {
+          "topic": "STATUS LINE",
+          "what": "Terminal look via JSON themes; deeper TUI widgets via extension code",
+          "where": "~/.pi/agent/themes/<name>.json · .pi/themes (trust-gated)",
+          "format": "strict theme JSON; name must equal filename",
+          "manage": "/settings → theme · --use-theme <name> · /reload",
+          "autoupdate": "Themes in a package update with pi update; manual drops stay put",
+          "verdict": "OVERLAY",
+          "why": "Theme schema Pi-only; core look + pi overlay fields",
+          "emission": [
+            "install.pi: copy → ~/.pi/agent/themes/<n>.json",
+            "check: name == filename (strict schema)",
+            "deep TUI: ctx.ui.* needs extension (review)"
+          ]
+        },
+        {
+          "topic": "EXEC POLICY",
+          "what": "No permission system or sandbox; a project trust gate decides what loads",
+          "where": ".pi/* trust-gated · defaultProjectTrust ask|always|never",
+          "format": "none — settings trust + exposure flags only",
+          "manage": "pi config · /settings · codemode QuickJS sandbox",
+          "autoupdate": "No artifact to update — trust is a per-project prompt, not a file",
+          "verdict": "NO SURFACE",
+          "why": "Nothing declarative to emit; record carries risk metadata",
+          "emission": [
+            "compatibility.pi: no policy surface (YOLO)",
+            "emit: trust.tier + capabilities[] at install",
+            "codemode: sandbox for model-written JS only"
+          ]
+        }
+      ]
+    }
+  ]
+}

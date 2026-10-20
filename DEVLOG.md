@@ -366,3 +366,233 @@ Verification: visual gate 6/6 (round 2 after machine enlargement+recolor); COM r
 green (ribbon start, GotoSlide drive): jump live @1.2s, timer draining+blinking, heart-pop,
 chest spawn→travel→collect proven by dedicated sampler (spawn ~8s, collect at man ~12s),
 finale completes (machine done, banner, steam, hearts refill), exit reset, 1152 ticks e=[].
+
+## v4 — "The Unified Agent Registry" static research deck (2026-10-16)
+
+Pivot from game decks to a RESEARCH deck presenting the unified-registry corpus
+(agents-unified-registry/, 8 files, all verified 2026-10-16). Static .pptx only —
+NO VBA, no engine, no macros — but visually continuing the v3 compact style
+(CONTRACT-COMPACT + ADDENDUM are the contract): bitmap pixel-font kickers/titles,
+Consolas-only native text, dashed ink ground line flush at the bottom edge on every
+slide, bitmap "SLIDE n/13" counters, 1-bit ink/gray discipline with color allowed
+ONLY on the closer's m03 vending machine + c02 chest.
+
+Built in nano-super-slides-v4\ (13 slides): title w/ runner + 4-figure parade ·
+fragmentation matrix (4 harnesses × 6 artifact types) · one slide per harness
+(Claude Code v2.1.302 / Codex rust-v0.163.0 / OpenCode 2.0 ~214k stars / Pi 1.3.0
+5,361 packages) with ID CARD + REGISTRY SURFACES kv rows + SURPRISE fact ·
+standards layer (Agent Skills 46 clients vs Agent Plugins v1.0.0 TSC-anthropic-
+absent-only-Codex; AGENTS.md+MCP under AAIF; Claude declined .agents/ #66352) ·
+prior-art table (skills.sh 35.3k stars, ClawHub 31,371/2,371, claude-plugins.dev
+11,989/63,065, pi.dev 5,361, OpenCode index.json, MCP Registry ~9,652) · security
+(36.82% / 7.6% / 80% ASR / 157-of-98,380 + day-1 trust ladder) · design (thin
+index + agentreg, PUBLISH→VERIFY→SCAN→SEAL→INDEX→INSTALL→LOCK flow band) · one
+record four emissions + agentreg.lock differentiator · roadmap v0/v1/v2 ·
+REGISTRY BREWING closer.
+
+Pipeline = v3's exactly: (1) gen_sprites_v4.py (Pillow in the repo-root uv venv)
+imports gen_catalog.py + gen_sprites_compact.py from v3 via importlib — reuses the
+5×7 font renderer (adds a "%" glyph the way gen_catalog added É), the stick-figure
+primitives, r02 runner, and the pooled m03/c02 colored art; outputs 40 text
+bitmaps, 6 figures (4 harness stick variants: antenna/visor/satchel/package,
+accessory gray, body ink), machine_done + chest at 8 px/cell → manifest_v4.json.
+(2) build_v4.js (pptxgenjs from global npm via NODE_PATH) — tables are hand-drawn:
+kv rows with dotted-leader dash rects, 1-cell ink rules, no pptx table chrome;
+every shape objectName'd. (3) export_pngs_v4.ps1 (COM Export 1920×1080, no
+LibreOffice) + verify_v4.ps1 (COM assert: 13 slides, shapes>0, images present).
+
+Bugs caught by the visual/pixel gate: (a) title auto-fit computed from the
+manifest KEY ("vt01" = 4 chars) instead of the bitmap's cell width → slide-1 title
+placed at full 0.52in and ran to 12.95in; fixed to read m.w from the manifest.
+(b) closer banner geometrically crossed the machine's upper body (y math slip) —
+rebuilt placement right-aligned to the machine, lifted machine 2 cells off the
+dash line; vision model kept claiming occlusion but pixel scans prove banner rows
+824–854 vs machine 881–1078 are disjoint — trusted the pixels. Pixel-QA script
+scans (title band ≤ voxel edge, right-edge ink = 0, pre-ground zone ink = 0,
+counter clearance rows) pass 13/13; COM assert PASS. Notable deviation: figure
+px/cell raised (figures 2, heroes 8) so placed sizes land near-native at 144-dpi
+export instead of v3's 1-px world (static deck, no engine snapping).
+
+Post-delivery visual gate (presentations:visual-judge, fresh set): 12/13 pass; one
+defect — closer chest clipped by the bottom edge (bands cut at y1080, no closing
+base; machine seated fine). Fix: lifted chest 2 cells (bottom = GROUND − 2C, body
+ends row 1075, dash at 1079, same seating as machine); re-exported all PNGs.
+Re-gate: 13/13 PASS. (Banner/machine ~25–27px gap confirmed non-issue twice.)
+
+## v4 game engine take 3 — REGISTRY BREWING (2026-10-16 late) — READY, blocked by Office licensing
+
+Third agent attempt on the slide-13 mini-game. All three deliverable scripts are now
+complete, audited against the v3 compact baselines, and syntax-clean; the injection run
+got further than ever before (slide-13 bound at 36 shapes, contract 15/15, GameEngine
+module injected at 826 lines) — then hit a wall that is environmental, not code:
+
+**PowerPoint is running as an Unlicensed Product (reduced-functionality mode).**
+Window title captured verbatim: `nano-super-agent-registry.pptx - PowerPoint (Unlicensed
+Product)`; app caption via COM: `PowerPoint (Unlicensed Product)` (16.0.20430). One
+targeted diagnostic session (zz_diag5.ps1, kept as the reproducer) captured each edit
+class verbatim:
+
+- write existing shape property -> `COMException :: Exception from HRESULT: 0x80048240`
+- `Shapes.AddShape` -> `UnauthorizedAccessException :: Access denied. You do not have
+  enough privileges to complete this operation.` (HR=0x80070005)
+- `VBProject.VBComponents.Add` + `AddFromString` -> **still works** (writes to the VBA
+  object model succeed; slide edits do not)
+- `Presentation.SaveAs` -> `COMException :: Presentation.SaveAs : An error occurred
+  while PowerPoint was saving the file.` (HR=0x80004005)
+- reads (Open, Shapes.Item, TextRange) all still work — which is exactly why the
+  coordinator's "opens cleanly via COM" health check passed while every EDIT is denied.
+
+This also retroactively explains take-2's "blanket edit denial"/"master view" symptoms.
+osppsvc is not installed (M365 subscription licensing, ClickToRunSvc running); repair is
+a user action (sign back in to M365 / reactivate Office), not an agent action. No .pptm
+was produced; the authored .pptx is untouched (the inject opens it read-write but
+SaveAs is the only write, and it failed). Per the fail-fast budget (inject attempt 1 +
+one diagnostic, no retries beyond) COM work was stopped.
+
+### Engine as shipped-ready (game_engine_v4.vba, 826 lines)
+
+v3 compact architecture verbatim: user32 `SetTimer` 25 ms -> `OnGameTimer` ticking a
+bounded phase machine (0 play / 1 brew / 2 won-idle); auto-macros return immediately;
+`OnSlideShowPageChange` activates only on the LAST slide (`Slides.Count`, never
+hardwired 13) so slides 1-12 are never bound; `View.Slide.SlideIndex` polling
+(CurrentSlideIndex is unreadable under COM); module-level state with `Set` Dictionary
+writes; ring-buffer trail telemetry into cfgTime (latched `alloc` budget BEFORE any
+TraceIt write); DBG_PING / DBG_COMPILE / StartGame probes; no identifier named Mark.
+
+Game: runner (authored x, 3 lanes at pitch 1.35 x runner height) intercepts art1..4
+(C/K/O/P skill-cubes) drifting in one-at-a-time from the right at 96 pt/s (v3
+drifting-chest mechanic). Input = btnUp/btnDown run-macro chips (inject-placed;
+arrow keys are slideshow-owned and ActiveX is blocked on this build — LEARNINGS #9) and
+`runner.Top` doubles as the COM-driven input register. Touch (8 pt slack) collects:
+cube parks miniaturised in the HUD inventory row right of timeChip. All 4 -> BREW
+(machine pulse, HUD cubes flash, brewR/G/A overlay chips chase then light solid,
+machineCup drops to the dispense slot, banner "ONE REGISTRY - EVERY AGENT" right-aligns
+over the machine) -> WON idle. Miss (exits left) = -1 heart, respawn in 2.5-4.5 s;
+0 hearts or cfgTime (90 s authored, read at init) elapsed -> soft reset (fresh board,
+full hearts — never a dead end). Leave-slide / terminate restores the authored closer
+exactly (including timeText emptied, cubes visible at authored strip x).
+
+### Fixes applied to the partial files this take
+
+- inject_vba_v4.ps1: the bare `finally { $pp.Quit() }` masked the real exception and,
+  on Quit failure (0x80048240), skipped the trailing taskkill -> zombie POWERPNT that
+  poisons later sessions. Now: inner catch prints the failure verbatim + HR, swallows
+  (flag), Quit is best-effort, taskkill ALWAYS runs, exit 1 on failure.
+- final_verify_v4.ps1: pre-existing parser bug `("miss $k: ...")` — `$k:` parsed as a
+  scope-qualified variable; whole file would not parse. Fixed to `${k}:`. Same
+  best-effort Quit hardening.
+- inject's button placement (btnUp/btnDown at 320.4/370.8 pt, y 126.36) clears the HUD
+  inventory row (ends ~283 pt) and the s13_spec subtitle (ends ~117 pt); brew overlays
+  are placed from the machine shape's own rect via gen_sprites_v4.py cell ratios.
+
+### Resume path (after Office is reactivated — no code changes needed)
+
+```
+cd C:\Users\aryan\pro\slides\nano-super-slides-v4
+powershell -NoProfile -ExecutionPolicy Bypass -File zz_diag5.ps1   # expect all "ok"
+powershell -NoProfile -ExecutionPolicy Bypass -File inject_vba_v4.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File final_verify_v4.ps1   # 4-stage COM drive
+powershell -NoProfile -ExecutionPolicy Bypass -File export_pngs_v4.ps1    # re-render closer
+```
+
+final_verify_v4.ps1 drives: static structure (13 slides, +7 IO shapes on 13 only,
+macro actions, hidden banner/cup/chips) -> DBG_PING/DBG_COMPILE probes -> show 1 win
+path (entry reset, spawn/drift deltas, 4x lane-intercept collects, brew+WIN asserts,
+exit restore) -> show 2 three misses -> 0-heart soft reset -> show 3 cfgTime=8
+timeout wrap -> slides 1-12 unchanged + `e=[]` clean-engine check.
+
+## v5 — "Building Our Own Registry" per-harness integration guide (2026-10-19)
+
+User feedback on v4: the survey deck's per-harness slides were inconsistent (Claude's
+hero = "30+ hook events", Codex's = "~130K GitHub stars" — different KINDS of element)
+and hard to read. v5 refocus: HOW we build our own registry — the common elements,
+per harness, with a fixed topic contract.
+
+### Deck contract (the fix for the consistency error)
+
+- 25 slides: dark cover · how-to-read · data model · 4 harness chapters × 5 topic
+  slides (claude 4-8 amber, codex 9-13 green, opencode 14-18 blue, pi 19-23 purple)
+  · translation matrix (derived) · dark closer. No game (Office still unlicensed;
+  user rule: game ⇒ .pptm, else .pptx — this deck is .pptx).
+- Topic grouping fixed across chapters: Skills+Commands · Subagents+Hooks · Plugins
+  (standalone) · MCP+LSP+CustomTools · Statusline+ExecPolicy.
+- Every topic card = same six facts (WHAT / WHERE / FORMAT / MANAGE / AUTO-UPDATE /
+  VERDICT chip + why) + REGISTRY EMISSION panel (accent-tinted, mono install fields).
+- Verdict chips semantic deck-wide: COPY-AS-IS green · TRANSLATE blue · OVERLAY amber
+  · NO SURFACE gray. AUTO-UPDATE answered on EVERY card (user ask): only bundles
+  self-update (claude marketplaces, codex marketplace upgrade, opencode plugin
+  update, pi update); skills/MCP/agents/hooks are file-drops → agentreg.lock wedge.
+- Slide 24 matrix built FROM the content JSONs at build time — cannot drift.
+- Readability overhaul: pixel font HEADINGS ONLY (kickers/titles/cover); body = native
+  Segoe UI; Consolas only for real code. Chapter kickers accent-colored.
+
+### Pipeline (copy-adapt of v4)
+
+- `gen_sprites_v5.py` — 36 heading bitmaps (22 accent kickers) + runner/cubes/
+  machine/cup; manifest_v5.json; verify() incl. pure-accent kicker gate. ALL PASS.
+- `content/content-{claude,codex,opencode,pi}.json` — extracted by 4 parallel
+  scope-fenced subagents from the corpus (one file each, contract-validated).
+- `build_v5.js` — pptxgenjs; loadHarness() schema gate (exact keys/topics/verdicts,
+  char-budget warns) THEN one topicCard()/topicSlide() factory for all 20 chapter
+  slides; shape counts came out identical per chapter (56/56/32/80/56) — machine-
+  verified structural symmetry.
+- `export_pngs_v5.ps1` / `verify_v5.ps1` (25-slide assert) / `qa_scan_v5.py`
+  (accent-kicker gate for 4-23, dark={1,25}). ALL PASS.
+
+### Gates and repairs
+
+1. First render: qa 24/25 — cover voxel was top-left, gate expects top-right
+   (closer diagonal); aligned cover to closer. ALL PASS after rebuild.
+2. visual-judge pass 1: 5/25 — systematic: italic why-line collided with the verdict
+   chip on all 20 chapter slides (chip at y+0.17 h≈0.37, why at y+0.50). Also caught
+   by accident: WHERE row was rendering cd.format (copy bug in the rows table).
+   Fix: chip up to header row (y+0.14), why at y+0.58, rhythm +0.04 down; WHERE→cd.where.
+3. visual-judge pass 2 (chapter slides): 20/20 pass — no collisions, no overflow,
+   WHERE≠FORMAT everywhere, cross-harness structure identical, readable. Total 25/25.
+
+### Delivered
+
+`nano-super-slides-v5/nano-super-registry-guide.pptx` (25 slides) +
+render/ PNGs (1920×1080) + content JSONs. v4 untouched.
+
+## v5.1 — matrix moved to slide 4 + SPECIFICATIONS section (2026-10-20)
+
+User manually reordered the shipped pptx (matrix 24 → 4; saved 13:27) and renamed
+docs/slide-24.md → docs/slide-4.md. Folded that order into the source pipeline and
+extended: deck 25 → 33 slides.
+
+- New order: 1 cover · 2 how-to-read · 3 data model · 4 translation matrix ·
+  5-12 SPECIFICATIONS (explainer + detail per spec) · 13-17 claude · 18-22 codex ·
+  23-27 opencode · 28-32 pi · 33 closer.
+- Specs section, one pair per spec: explainer slide (WHAT THIS SPEC IS kv rows ·
+  WHY THE REGISTRY CARES · ON THE NEXT SLIDE · spec-series rail chip highlight) +
+  detail slide (THE FIELDS mono kv · HARD RULES · HOW THE FOUR IMPLEMENT IT ·
+  dark REGISTRY STANCE · GAPS strip). Specs: Agent Skills (agentskills.io) ·
+  Agent Plugins v1.0.0 · MCP + Registry server.json · Subagents (no spec — the
+  de-facto formats, Claude md canonical).
+- content/specs.json extracted by a 5th scope-fenced agent from
+  cross-spec-standards.md (+design §3); loadSpecs() validates shape/order/budgets
+  same as the harness files.
+- Renumber mechanics: chapter kickers regenerate as k13..k32; matrix uses k04/t04;
+  spec kickers spk1-4 + titles sp_s*/sp_d*; qa CHAPTER=13-32, dark={1,33};
+  verify_v5 asserts 33; TOTAL=33.
+
+### Gotchas hit this round
+
+- EBUSY writing the pptx: user's PowerPoint still had the deck open. Kill
+  POWERPNT BEFORE node build, not just before COM. Note: in Git Bash,
+  `taskkill /IM` gets path-mangled ("C:/Program Files/Git/IM") — use
+  `powershell -NoProfile -Command "Stop-Process -Name POWERPNT -Force"` instead.
+- Asset-key collision: closer referenced kicker asset k25, which renumbering
+  turned into OPENCODE's chapter 3-of-5 kicker → closer showed a chapter kicker.
+  Fix: non-numeric keys for position-independent slides (kz/tz). Lesson: numeric
+  asset names must be reserved for position-bound assets only.
+- visual-judge full pass: 32/33 → closer kicker fixed → re-judge 33/33.
+  qa_scan ALL PASS; verify_v5 ASSERT PASS (33 slides).
+
+### Delivered (v5.1)
+
+`nano-super-slides-v5/nano-super-registry-guide.pptx` (33 slides) + render/ +
+content/{4 harness,specs}.json + docs/slide-4.md (title updated to Slide 4).
+
+

@@ -1,0 +1,164 @@
+{
+  "specs": [
+    {
+      "id": "skills",
+      "section": {
+        "what": "agentskills.io: a skill = directory with SKILL.md (YAML frontmatter + Markdown body)",
+        "steward": "Anthropic-donated 2025-12-16; informal GitHub+Discord",
+        "since": "Living spec: unversioned, zero tags",
+        "adoption": "46 clients counted 2026-10-16; all four of our harnesses",
+        "covers": "SKILLS · COMMANDS",
+        "why": "The only artifact all four harnesses consume today — the universal payload; spec-pure skills work everywhere.",
+        "next": "Detail: the 6 fields + constraints, the metadata extension channel, per-harness divergence"
+      },
+      "detail": {
+        "fields": [
+          { "k": "name", "v": "req; 1–64 chars [a-z0-9-]; must match dir name" },
+          { "k": "description", "v": "req; 1–1024 chars; what + when; keyword-rich" },
+          { "k": "license", "v": "opt; license name or pointer to bundled file" },
+          { "k": "compatibility", "v": "opt; 1–500 chars; env requirements" },
+          { "k": "metadata", "v": "opt; string→string map; sanctioned extension channel" },
+          { "k": "allowed-tools", "v": "opt; experimental; support varies by client" }
+        ],
+        "rules": [
+          "name+description required; all other fields optional",
+          "Respect char limits: name ≤64, description ≤1024",
+          "metadata map is the only sanctioned extension channel",
+          "Vendor top-level fields break claude.ai — use overlays"
+        ],
+        "harness": [
+          { "harness": "claude", "note": "Adds extras; claude.ai hard-errors non-spec fields" },
+          { "harness": "codex", "note": "Spec fields + agents/openai.yaml sidecar" },
+          { "harness": "opencode", "note": "metadata.opencode/* keys; license ignored" },
+          { "harness": "pi", "note": "Spec fields; name need not match dir" }
+        ],
+        "gaps": [
+          "No version field; registry must own semver + seals",
+          "No dependencies, signing, or discovery paths in spec",
+          "allowed-tools experimental — support varies by client"
+        ],
+        "stance": "Spec-pure SKILL.md + namespaced metadata keys — the one artifact all four consume"
+      }
+    },
+    {
+      "id": "plugins",
+      "section": {
+        "what": "agent-plugins.org bundle: plugin.json (closed 9-field set) + skills/ + mcp.json + overlays",
+        "steward": "TSC Amazon·Cursor·Microsoft·OpenAI·Vercel; no Anthropic",
+        "since": "v1.0.0 published 2026-08-06; 1.1 draft",
+        "adoption": "9 compatible clients; of our four, only Codex",
+        "covers": "PLUGINS · SKILLS · MCP",
+        "why": "The only vendor-neutral container; only Codex consumes it of ours — but its skills/ + mcp.json payloads are the two universal formats.",
+        "next": "Detail: the closed 9-field manifest, mcp.json rules, extensions, and who actually loads it"
+      },
+      "detail": {
+        "fields": [
+          { "k": "$schema", "v": "req; exact URL agent-plugins.org/schemas/1.0.0" },
+          { "k": "name", "v": "req; 1–64 chars [a-z0-9.-]; alphanumeric ends" },
+          { "k": "version", "v": "opt; type-only; semver recommended, not enforced" },
+          { "k": "author", "v": "{name,email,url}; part of closed 9-field set" },
+          { "k": "keywords", "v": "opt; string array (one of the closed 9)" },
+          { "k": "extensions", "v": "map of reverse-DNS namespaces; client-defined" }
+        ],
+        "rules": [
+          "plugin.json = closed 9-field set; unknown fields warn+ignore",
+          "$schema + name required; version type-checked only",
+          "Artifacts = skills + mcp.json only; no commands/hooks/agents",
+          "mcp.json: non-loopback URLs HTTPS; no OAuth fields in v1"
+        ],
+        "harness": [
+          { "harness": "claude", "note": "No — uses own .claude-plugin/; declined .agents/" },
+          { "harness": "codex", "note": "YES — root plugin.json + .codex-plugin/ overlay" },
+          { "harness": "opencode", "note": "No — npm TS plugins; spec never mentioned" },
+          { "harness": "pi", "note": "No — npm packages w/ keyword pi-package" }
+        ],
+        "gaps": [
+          "No marketplace/distribution/install in spec",
+          "Only 2 component types; commands/hooks/agents excluded",
+          "No signing; no auth/credentials; Claude absent"
+        ],
+        "stance": "Bundle = packaging substrate; dual-emit .claude-plugin/ until Anthropic converges"
+      }
+    },
+    {
+      "id": "mcp",
+      "section": {
+        "what": "Tool-server protocol + registry: metadata-only server.json records pointing at npm/PyPI/Docker",
+        "steward": "MCP→AAIF/LF 2025-12-09; Registry: community WG",
+        "since": "Registry preview 2025-09-08; API v0.1",
+        "adoption": "All 4 speak MCP; registry ~9,652 servers (2026-05)",
+        "covers": "MCP (+ custom tools via MCP in claude)",
+        "why": "MCP config is the lingua franca — mcpServers JSON copies as-is into Pi; the registry's verify-then-point model is the governance blueprint to copy.",
+        "next": "Detail: server.json fields, reverse-DNS identity, federation API, per-harness config"
+      },
+      "detail": {
+        "fields": [
+          { "k": "name", "v": "reverse-DNS id, e.g. io.github.user/server" },
+          { "k": "version", "v": "per-name versions + status via API" },
+          { "k": "repository", "v": "{url,source,id,subfolder}" },
+          { "k": "packages[]", "v": "npm|pypi|nuget|cargo|oci|mcpb; URL allowlist" },
+          { "k": "remotes[]", "v": "url templates + headers" },
+          { "k": "_meta", "v": "publisher-provided only; 4 KiB cap" }
+        ],
+        "rules": [
+          "Metadata-only, no code hosting; packages live on npm/PyPI",
+          "Namespace proof to publish: GitHub OIDC or DNS challenge",
+          "No private servers, no scanning — delegated to registries",
+          "OpenAPI /v0.1/servers; aggregators pull ~hourly"
+        ],
+        "harness": [
+          { "harness": "claude", "note": "mcpServers JSON — the de-facto shape" },
+          { "harness": "codex", "note": "Needs TOML: [mcp_servers.<id>] in config" },
+          { "harness": "opencode", "note": "JSON config mcp.servers.<name> (v2)" },
+          { "harness": "pi", "note": "Copies Claude mcp.json entries as-is" }
+        ],
+        "gaps": [
+          "MCP-only: no skills/plugins coverage",
+          "No private servers; scanning delegated",
+          "Config syntax splits: JSON everywhere but Codex TOML"
+        ],
+        "stance": "Store server.json-shaped metadata; emit mcp.json + JSON/TOML configs mechanically"
+      }
+    },
+    {
+      "id": "subagents",
+      "section": {
+        "what": "No cross-vendor standard exists — every harness ships its own subagent format",
+        "steward": "None — no owning body for subagents anywhere",
+        "since": "No spec to version; formats de-facto",
+        "adoption": "Claude/Codex/OpenCode native; Pi example-level",
+        "covers": "SUBAGENTS",
+        "why": "Subagents are pure fragmentation: four shapes, no shared fields, no standard to anchor on — adapters, not standards.",
+        "next": "Detail: the de-facto Claude md shape vs Codex TOML, OpenCode dialect, and Pi's gap"
+      },
+      "detail": {
+        "fields": [
+          { "k": "name", "v": "req (de-facto); ≤256 chars; no colons" },
+          { "k": "description", "v": "req; delegation trigger — no whenToUse field" },
+          { "k": "tools", "v": "opt; allowlist; supports mcp__github__*" },
+          { "k": "model", "v": "opt; sonnet|opus|haiku|<id>|inherit" },
+          { "k": "skills", "v": "opt; preload ≤32 skill bodies" },
+          { "k": "mcpServers", "v": "opt; per-agent MCP server set" }
+        ],
+        "rules": [
+          "Fields below are Claude's de-facto shape — no spec exists",
+          "Body of the md file is the system prompt",
+          "Codex: TOML requires developer_instructions — generate it",
+          "Pi: example extension only; mark unsupported"
+        ],
+        "harness": [
+          { "harness": "claude", "note": ".claude/agents/*.md — the canonical shape" },
+          { "harness": "codex", "note": ".codex/agents/*.toml; 3 fields required" },
+          { "harness": "opencode", "note": "md dialect: mode + permissions (desc req)" },
+          { "harness": "pi", "note": "Example ext only; mirrors Claude shape" }
+        ],
+        "gaps": [
+          "No spec, no shared fields, no versioning at all",
+          "Each harness needs its own emitter transform",
+          "Pi users must install the example extension"
+        ],
+        "stance": "Model on the claude md shape; translate to codex TOML; mark pi unsupported"
+      }
+    }
+  ]
+}

@@ -1,0 +1,192 @@
+{
+  "harness": "claude",
+  "name": "CLAUDE CODE",
+  "version": "V2.1.302",
+  "accentKey": "claude",
+  "intro": {
+    "what": "Anthropic's terminal coding agent — the richest extension surface of the four harnesses",
+    "trust": "Ask-to-approve tool permissions + unoverridable managed settings; npm plugin sources never run scripts"
+  },
+  "slides": [
+    {
+      "group": 1,
+      "title": "SKILLS & COMMANDS",
+      "cards": [
+        {
+          "topic": "SKILLS",
+          "what": "Folders of SKILL.md instructions the model auto-loads when relevant",
+          "where": ".claude/skills/ · ~/.claude/skills/ · enterprise · plugin",
+          "format": "SKILL.md + YAML frontmatter (open Agent Skills spec)",
+          "manage": "/skills · /reload-skills · /skill-doctor · claude plugin init",
+          "autoupdate": "No — unversioned file drop, no update mechanism; only plugins auto-update",
+          "verdict": "OVERLAY",
+          "why": "Agent Skills spec native; Claude extras via overlay",
+          "emission": [
+            "install.claude: copy → .claude/skills/<n>/",
+            "scopes: project | user | enterprise | plugin",
+            "overlay: when_to_use, argument-hint, context: fork"
+          ]
+        },
+        {
+          "topic": "COMMANDS",
+          "what": "Markdown files that become /slash-command prompts; absorbed by skills",
+          "where": ".claude/commands/ · ~/.claude/commands/",
+          "format": ".md file + skills-style YAML frontmatter",
+          "manage": "no CLI — file drop → /name (subdirs → /db:migrate)",
+          "autoupdate": "No — legacy unversioned drop; no update path; superseded by skills",
+          "verdict": "COPY-AS-IS",
+          "why": "same frontmatter as skills; drop works as-is",
+          "emission": [
+            "install.claude: copy → .claude/commands/<n>.md",
+            "prefer: emit as skill (commands merged in)",
+            "nested: commands/db/migrate.md → /db:migrate"
+          ]
+        }
+      ]
+    },
+    {
+      "group": 2,
+      "title": "SUBAGENTS & HOOKS",
+      "cards": [
+        {
+          "topic": "SUBAGENTS",
+          "what": "Markdown-defined helper agents with their own prompt & tool scope",
+          "where": ".claude/agents/ · ~/.claude/agents/ · plugin agents/",
+          "format": "*.md + YAML frontmatter; body = system prompt",
+          "manage": "file drop · --agents '{...}' flag · /agents",
+          "autoupdate": "No — unversioned file drop; plugin-bundled agents update with the plugin",
+          "verdict": "COPY-AS-IS",
+          "why": "canonical shape; other harnesses must translate",
+          "emission": [
+            "install.claude: copy → .claude/agents/<n>.md",
+            "scopes: project | user | org | plugin | --agents",
+            "frontmatter: tools, model, memory, isolation"
+          ]
+        },
+        {
+          "topic": "HOOKS",
+          "what": "Scripts fired automatically on 30 lifecycle events; can block tools",
+          "where": "settings.json · plugin hooks/hooks.json · frontmatter",
+          "format": "hooks JSON map: Event → matcher → handler (5 types)",
+          "manage": "edit settings JSON · plugin install · /doctor",
+          "autoupdate": "No — unversioned settings edits; plugin hooks ride plugin updates",
+          "verdict": "COPY-AS-IS",
+          "why": "native hooks JSON; only the merge scope varies",
+          "emission": [
+            "install.claude: merge → settings.hooks",
+            "alt: plugin hooks/hooks.json (scopes merge)",
+            "identity.tier: review · install shows diff"
+          ]
+        }
+      ]
+    },
+    {
+      "group": 3,
+      "title": "PLUGINS & MARKETPLACES",
+      "cards": [
+        {
+          "topic": "PLUGINS",
+          "what": "Bundles of skills, agents, hooks and MCP installed from marketplaces",
+          "where": "~/.claude/plugins/cache/<mp>/<p>/<ver>/ · .claude-plugin/",
+          "format": ".claude-plugin/plugin.json + marketplace.json (7 sources)",
+          "manage": "claude plugin install|list|validate --strict · /plugin",
+          "autoupdate": "Yes — opt-in per marketplace (v2.0.70, 2025-12-15); the only auto-updater",
+          "verdict": "TRANSLATE",
+          "why": "agent-plugins root → .claude-plugin/ dual-manifest",
+          "emission": [
+            "emit .claude-plugin/plugin.json + components",
+            "claude plugin marketplace add <mp> → install",
+            "version: manifest → marketplace entry → git sha"
+          ]
+        }
+      ]
+    },
+    {
+      "group": 4,
+      "title": "MCP · LSP · CUSTOM TOOLS",
+      "cards": [
+        {
+          "topic": "MCP",
+          "what": "External tool servers (stdio or http) wired in via CLI or JSON",
+          "where": ".mcp.json (committed) · ~/.claude.json · plugin .mcp.json",
+          "format": "mcpServers JSON: http|sse|ws|stdio; ${VAR:-default}",
+          "manage": "claude mcp add -s local|project|user · add-json · /mcp",
+          "autoupdate": "No — no update mechanism; manual re-add; entries replace, never merge",
+          "verdict": "COPY-AS-IS",
+          "why": "mcpServers entry drops in as-is (CLI or JSON)",
+          "emission": [
+            "install.claude: claude mcp add <n> -s user",
+            "project: merge .mcp.json; needs interactive approval",
+            "managedMcpServers outranks all other scopes"
+          ]
+        },
+        {
+          "topic": "LSP",
+          "what": "Language servers bundled in plugins to add code-aware tools",
+          "where": "plugin root only: .lsp.json or plugin.json lspServers",
+          "format": ".lsp.json name→config map; requires extensionToLanguage",
+          "manage": "none — bundle in plugin; rides plugin install",
+          "autoupdate": "Rides parent plugin: no own path; plugin auto-update covers it",
+          "verdict": "TRANSLATE",
+          "why": "bare .lsp.json → must wrap in a plugin",
+          "emission": [
+            "emit: plugin bundle carrying root .lsp.json",
+            "every entry needs extensionToLanguage",
+            "alt: plugin.json lspServers key (merges)"
+          ]
+        },
+        {
+          "topic": "CUSTOM TOOLS",
+          "what": "Custom tools written as in-process MCP servers in Agent SDK code",
+          "where": "code only — Agent SDK customTools; no filesystem path",
+          "format": "SDK code: in-process MCP server (customTools API)",
+          "manage": "Agent SDK customTools; no CLI, no file drop",
+          "autoupdate": "No — lives in host app code; there is no artifact to update",
+          "verdict": "NO SURFACE",
+          "why": "SDK code surface; nothing installable to drop",
+          "emission": [
+            "install.claude: none — code-only surface",
+            "compatibility.surfaces: [] (no drop path)",
+            "no manifest, no version, nothing to pin"
+          ]
+        }
+      ]
+    },
+    {
+      "group": 5,
+      "title": "STATUS LINE & EXEC POLICY",
+      "cards": [
+        {
+          "topic": "STATUS LINE",
+          "what": "Custom bottom-bar status script fed session JSON on stdin",
+          "where": "settings key statusLine → any script path (all scopes)",
+          "format": "settings key statusLine → script (JSON stdin)",
+          "manage": "/statusline wizard · edit settings key",
+          "autoupdate": "Rides parent — settings points at a script; replacing script updates it",
+          "verdict": "COPY-AS-IS",
+          "why": "script + one settings key; no format change",
+          "emission": [
+            "install: drop script; set settings.statusLine",
+            "input: JSON session state on stdin",
+            "scopes: user | project | local | managed"
+          ]
+        },
+        {
+          "topic": "EXEC POLICY",
+          "what": "Permission rules and modes deciding which tool runs need approval",
+          "where": "settings.json permissions · managed-settings.json",
+          "format": "permissions.allow/deny rules; managed security keys",
+          "manage": "settings edits · claude --settings · --accept-command sha",
+          "autoupdate": "Not an artifact — settings state; no update channel; managed keys admin-only",
+          "verdict": "OVERLAY",
+          "why": "record declares required perms → allow-rule overlay",
+          "emission": [
+            "compatibility.requires → permissions.allow",
+            "auto/bypass barred from project+local",
+            "managed: disableSkillShellExecution, hook keys"
+          ]
+        }
+      ]
+    }
+  ]
+}

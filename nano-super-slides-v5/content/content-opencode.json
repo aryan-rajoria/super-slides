@@ -1,0 +1,192 @@
+{
+  "harness": "opencode",
+  "name": "OPENCODE",
+  "version": "2.0.X",
+  "accentKey": "opencode",
+  "intro": {
+    "what": "Open-source terminal AI coding agent (Anomaly, TS; 2.0 rewrite runs on Node)",
+    "trust": "Config permission maps + policies gate every tool action; deny .env*, ask doom_loop/external dirs"
+  },
+  "slides": [
+    {
+      "group": 1,
+      "title": "SKILLS & COMMANDS",
+      "cards": [
+        {
+          "topic": "SKILLS",
+          "what": "Native Agent Skills: SKILL.md folders the model loads on demand",
+          "where": ".opencode/skills · .agents/skills · ~/.config/opencode/skills",
+          "format": "SKILL.md + YAML frontmatter (Anthropic-compatible)",
+          "manage": "none — file drop · config skills[] paths · catalog URL",
+          "autoupdate": "Yes — catalog caches per version; bump = update. Most registry-ready",
+          "verdict": "OVERLAY",
+          "why": "portable SKILL.md + metadata.opencode/* overlay",
+          "emission": [
+            "copy → .opencode/skills/ (beats .agents, .claude)",
+            "alt: add catalog URL to config skills[] (v2)",
+            "overlay: metadata.opencode/slash, autoinvoke"
+          ]
+        },
+        {
+          "topic": "COMMANDS",
+          "what": "Markdown slash commands — reusable prompt templates",
+          "where": ".opencode/commands/<name>.md · ~/.config/opencode/commands",
+          "format": ".md frontmatter: description/agent/subtask/model",
+          "manage": "none — file drop; or commands[] config array (v2)",
+          "autoupdate": "No — file drop / commands[] config; replace by hand",
+          "verdict": "COPY-AS-IS",
+          "why": "registry copies md verbatim (design doc §4)",
+          "emission": [
+            "install: copy md → .opencode/commands/<n>.md",
+            "alt: config commands[] {name, template}",
+            "nested dirs namespace: a/b.md → /a/b"
+          ]
+        }
+      ]
+    },
+    {
+      "group": 2,
+      "title": "SUBAGENTS & HOOKS",
+      "cards": [
+        {
+          "topic": "SUBAGENTS",
+          "what": "Markdown sub-agent definitions with own model and permissions",
+          "where": ".opencode/agents/<name>.md · ~/.config/opencode/agents",
+          "format": ".md frontmatter: description, mode, model, permission",
+          "manage": "opencode agent add · list · remove",
+          "autoupdate": "No — replace the .md by hand; CLI only scaffolds",
+          "verdict": "TRANSLATE",
+          "why": "canonical agent → .md frontmatter (mode/perms)",
+          "emission": [
+            "emit .md: mode=subagent + permission map",
+            "target: .opencode/agents/<n>.md (id=filename)",
+            "built-ins: build plan general explore scout"
+          ]
+        },
+        {
+          "topic": "HOOKS",
+          "what": "No hooks file — event reactions live in TypeScript plugins",
+          "where": ".opencode/plugins/*.ts · ~/.config/opencode/plugins",
+          "format": "TS plugin exporting event/tool hooks (v2)",
+          "manage": "opencode plugin add · list · check · update · remove",
+          "autoupdate": "Yes when the codegen'd plugin ships on npm: plugin update",
+          "verdict": "TRANSLATE",
+          "why": "hook spec → codegen TS plugin module",
+          "emission": [
+            "codegen TS plugin → .opencode/plugins/agentreg-<n>.ts",
+            "map: tool.execute.before/after · permission.asked",
+            "v1→v2 event rewrite; plugins incompatible"
+          ]
+        }
+      ]
+    },
+    {
+      "group": 3,
+      "title": "PLUGINS & MARKETPLACES",
+      "cards": [
+        {
+          "topic": "PLUGINS",
+          "what": "TypeScript modules that hook events and add custom tools",
+          "where": ".opencode/plugins/*.ts · plugins[] config · npm/git/path",
+          "format": "TS module, Plugin type from @opencode-ai/plugin",
+          "manage": "opencode plugin add pkg@ver · list · check · update",
+          "autoupdate": "Yes — opencode plugin update; npm pkg@version pins",
+          "verdict": "TRANSLATE",
+          "why": "bundle → npm TS adapter plugin pkg",
+          "emission": [
+            "publish npm pkg; opencode plugin add <pkg>@<ver>",
+            "sources: npm · git pkg@github:o/r · path",
+            "no official marketplace; aggregators only"
+          ]
+        }
+      ]
+    },
+    {
+      "group": 4,
+      "title": "MCP · LSP · CUSTOM TOOLS",
+      "cards": [
+        {
+          "topic": "MCP",
+          "what": "Standard external tool servers connected via stdio or HTTP",
+          "where": "opencode.json mcp.servers.<name> (v2) · mcp.<name> (v1)",
+          "format": "JSON entry: local command/env · remote url/headers",
+          "manage": "opencode mcp add <n> --scope project|user|system",
+          "autoupdate": "No — manual config edit or re-run opencode mcp add",
+          "verdict": "TRANSLATE",
+          "why": "record → mcp.servers JSON (v1 mcp.<n> shim)",
+          "emission": [
+            "opencode mcp add <n> --scope user|project [--url]",
+            "config: mcp.servers.<n> (v2) · mcp.<n> (v1)",
+            "remote: url + headers + oauth ({env:KEY})"
+          ]
+        },
+        {
+          "topic": "LSP",
+          "what": "Language-server support: just a config key and plugin events",
+          "where": "config lsp key · plugin events only",
+          "format": "none documented — lsp key shape unspecified",
+          "manage": "none — no LSP CLI or registration documented",
+          "autoupdate": "N/A — no surface to update",
+          "verdict": "NO SURFACE",
+          "why": "config-key-only; no registration schema",
+          "emission": [
+            "no install.opencode — nothing emittable",
+            "lsp config key exists; schema undocumented",
+            "events: lsp.client.diagnostics · lsp.updated"
+          ]
+        },
+        {
+          "topic": "CUSTOM TOOLS",
+          "what": "Extra agent tools defined in TypeScript plugins via tool()",
+          "where": ".opencode/plugins/*.ts (tool() in plugin module)",
+          "format": "tool({ description, args: Zod, execute })",
+          "manage": "opencode plugin add · check · update",
+          "autoupdate": "Yes — tools update with their plugin (plugin update)",
+          "verdict": "TRANSLATE",
+          "why": "tool spec → codegen TS plugin tool()",
+          "emission": [
+            "emit tool({description, args: Zod, execute})",
+            "ship inside plugin pkg; override built-ins",
+            "validate: opencode plugin check"
+          ]
+        }
+      ]
+    },
+    {
+      "group": 5,
+      "title": "STATUS LINE & EXEC POLICY",
+      "cards": [
+        {
+          "topic": "STATUS LINE",
+          "what": "No statusline surface; themes are the adjacent JSON drop",
+          "where": "none · themes: .opencode/themes/<name>.json",
+          "format": "theme.json only (no statusline format exists)",
+          "manage": "none — /themes selects; theme file drop only",
+          "autoupdate": "No surface. Themes update only by file drop",
+          "verdict": "NO SURFACE",
+          "why": "opencode.md documents themes only, no statusline",
+          "emission": [
+            "no statusline surface in opencode.md",
+            "adjacent: copy json → .opencode/themes/<n>.json",
+            "select via /themes; plugins can't register"
+          ]
+        },
+        {
+          "topic": "EXEC POLICY",
+          "what": "Config rules saying which tool actions are allowed or must ask",
+          "where": "opencode.json permissions[] · policies[] (v2.0.29+)",
+          "format": "permissions[] {action,resource,effect} + policies[]",
+          "manage": "none — config only; --auto approves non-denied",
+          "autoupdate": "No — manual config edit; org .well-known can push policies",
+          "verdict": "OVERLAY",
+          "why": "record declares action/resource/effect statements",
+          "emission": [
+            "emit permissions[] {action,resource,effect}",
+            "defaults: read deny .env* · doom_loop ask",
+            "policies provider.use; global > project"
+          ]
+        }
+      ]
+    }
+  ]
+}
