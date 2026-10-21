@@ -1,9 +1,10 @@
-"""Pixel QA for v5 renders (1920x1080 = 144 px/in), 25 slides.
-Checks: edge purity, header band alignment (kicker accent / title ink),
+"""Pixel QA for v5 renders (1920x1080 = 144 px/in), 45 slides.
+Checks: edge purity, header band alignment (kicker BLUE / title ink),
 voxel cluster top-right, page counter, and prints an ASCII composition.
 
-v5 differences from v4: chapter kickers (slides 4-23) are HARNESS-ACCENT
-colored (amber/green/blue/purple) instead of always blue; dark = {1, 25}.
+v5 section structure: slides 5-44 are ten per-surface sections (four
+slides each); every light-slide kicker is BLUE — no accent kickers
+remain. dark = {1, 45}.
 """
 import sys
 from PIL import Image
@@ -16,9 +17,7 @@ LBLUE = (0x7C, 0xB0, 0xFF)
 GREEN = (0x16, 0xA3, 0x4A)
 AMBER = (0xD9, 0x77, 0x06)
 PURPLE = (0x7C, 0x3A, 0xED)
-ACCENTS = [BLUE, GREEN, AMBER, PURPLE]
-TOTAL = 33
-CHAPTER = set(range(13, 33))  # slides 13-32 (chapters after matrix@4 + specs@5-12)
+TOTAL = 45
 
 
 def near(a, b, tol=10):
@@ -44,15 +43,14 @@ def scan(path, i, dark):
     if bad:
         fails.append(f"edge pixels != bg: {bad}")
 
-    # 2. header: kicker (accent for chapters, blue for frame) + ink title below
+    # 2. header: BLUE kicker + ink title below
     if not dark:
-        cols = ACCENTS if i in CHAPTER else [BLUE]
-        kick = any(near(im.getpixel((x, y)), c, 40)
-                   for x in range(76, 600, 4) for y in range(55, 100, 2) for c in cols)
+        kick = any(near(im.getpixel((x, y)), BLUE, 40)
+                   for x in range(76, 600, 4) for y in range(55, 100, 2))
         tit = any(near(im.getpixel((x, y)), INK, 30)
                   for x in range(76, 900, 4) for y in range(100, 165, 2))
         if not kick:
-            fails.append("no accent/BLUE kicker at header")
+            fails.append("no BLUE kicker at header")
         if not tit:
             fails.append("no INK title at header")
 

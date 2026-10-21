@@ -1,0 +1,154 @@
+{
+  "banners": [
+    {
+      "surface": "SKILLS",
+      "tagline": "Folders of SKILL.md instructions every harness loads on demand — the universal artifact",
+      "minimum": [
+        { "k": "spec fields", "v": "name + description (2 required fields)" },
+        { "k": "versionSeal", "v": "semver + contentSha256 — spec has no version" },
+        { "k": "file tree", "v": "skillDir + entry + files[] for copy installs" },
+        { "k": "meta", "v": "license, compatibility, author, repo, keywords" },
+        { "k": "overlays", "v": "claude frontmatter · openai.yaml · metadata.opencode" },
+        { "k": "compat", "v": "per-harness supported/surfaces/via matrix" }
+      ],
+      "why": "SKILL.md ships 6 spec fields and no version — the registry owns identity, seal and per-harness copies.",
+      "rowSummary": "Overlay on three, copy-as-is on Pi — one spec-pure SKILL.md, only vendor metadata keys differ.",
+      "update": "OpenCode's catalog self-updates; Codex re-copy + restart, Claude drops manual, Pi packaged via pi update. agentreg.lock pins urn→ver→sha."
+    },
+    {
+      "surface": "COMMANDS",
+      "tagline": "Markdown files that become /slash-command prompts — legacy everywhere, absorbed by skills",
+      "minimum": [
+        { "k": "name", "v": "filename IS the command: review.md → /review" },
+        { "k": "frontmatter", "v": "description + argument-hint (all 4 dialects)" },
+        { "k": "prompt body", "v": "markdown template; $1..$n argument slots" },
+        { "k": "versionSeal", "v": "semver + sha — nothing versions a command" },
+        { "k": "targets", "v": "commands|prompts dir per harness (4 paths)" },
+        { "k": "deprecation", "v": "legacy (claude) · deprecated + user-only (codex)" }
+      ],
+      "why": "One markdown shape drops as-is into four prompts dirs; the record adds identity, hash, per-harness paths.",
+      "rowSummary": "Copy-as-is ×4 — the only row where one file lands unchanged everywhere; Codex deprecated + user-only, Claude legacy.",
+      "update": "No auto-update anywhere: manual file replaces; Pi refreshes prompts only inside packages. agentreg.lock is the sole version pin."
+    },
+    {
+      "surface": "SUBAGENTS",
+      "tagline": "Helper agents with their own prompt, model and tool scope — Claude md is the canonical shape",
+      "minimum": [
+        { "k": "name+desc", "v": "required frontmatter pair in every dialect" },
+        { "k": "system prompt", "v": "md body = prompt; codex developer_instructions" },
+        { "k": "tools+model", "v": "tool scope, model, memory, isolation flags" },
+        { "k": "translations", "v": "md → TOML (codex) · mode/perms md (oc)" },
+        { "k": "trust", "v": "codex project layer inert until trusted" },
+        { "k": "compat", "v": "pi supported=false — example ext only" }
+      ],
+      "why": "Claude md is canonical; Codex wants TOML, OpenCode mode/perms — record stores the neutral form + translations.",
+      "rowSummary": "Claude md is canonical; Codex + OpenCode translate frontmatter; Pi has no core surface (example extension only).",
+      "update": "Nothing self-updates: manual file edits; plugin-bundled agents ride plugin updates (Claude). Lockfile pins what nothing else versions."
+    },
+    {
+      "surface": "HOOKS",
+      "tagline": "Lifecycle-event handlers — Claude-shape JSON for two harnesses, generated TypeScript for two",
+      "minimum": [
+        { "k": "event map", "v": "claude 30 events · codex 12 · oc/pi tool.*" },
+        { "k": "hook chain", "v": "Event → matcher → handler (5 types)" },
+        { "k": "handler", "v": "command/script + CLAUDE_PLUGIN_ROOT env" },
+        { "k": "adapters", "v": "codegen: oc TS plugin · pi pi.on() ext" },
+        { "k": "tier", "v": "review — hooks run code, can block tools" },
+        { "k": "install", "v": "merge settings/hooks.json (2) · drop .ts (2)" }
+      ],
+      "why": "Hooks run code (tier=review): two harnesses take JSON, two need generated TS — store spec, not the codegen.",
+      "rowSummary": "Same JSON drops into Claude and Codex (trust-gated); OpenCode and Pi translate spec into generated TypeScript modules.",
+      "update": "Nothing self-updates: Claude/Codex settings static; OpenCode/Pi update only when codegen'd plugin ships on npm — lockfile gates every bump."
+    },
+    {
+      "surface": "PLUGINS",
+      "tagline": "Bundles of skills, hooks, agents and MCP — one artifact, four different package formats",
+      "minimum": [
+        { "k": "components", "v": "skills[] + mcp.json + hooks (typed list)" },
+        { "k": "manifests", "v": "root plugin.json + .claude-plugin/ dual" },
+        { "k": "overlays", "v": ".codex-plugin/ · npm TS pkg · pi key" },
+        { "k": "catalogs", "v": "claude marketplace repo · codex catalog" },
+        { "k": "versionSeal", "v": "semver + treeSha256; marketplace ref pin" },
+        { "k": "tier", "v": "review if hooks/MCP ship in bundle" }
+      ],
+      "why": "Only Codex loads the bundle natively — dual-emit Claude's manifest, decompose to npm for OpenCode and Pi.",
+      "rowSummary": "Every harness repackages: Claude dual-manifest, Codex .codex-plugin overlay, OpenCode and Pi npm adapter packages.",
+      "update": "The only self-updating row: Claude marketplace auto-update, codex plugin upgrade, opencode/pi plugin update — lockfile pins the drift."
+    },
+    {
+      "surface": "MCP",
+      "tagline": "External tool servers over stdio or HTTP — the second universal payload, four config dialects",
+      "minimum": [
+        { "k": "transport", "v": "stdio cmd/args/env | http url/headers" },
+        { "k": "server entry", "v": "name, description, version, repo (server.json)" },
+        { "k": "emissions", "v": "claude/pi JSON · codex TOML · oc v1/v2" },
+        { "k": "sources", "v": "npm/pypi pkg, version, tarballSha256" },
+        { "k": "auth", "v": "client-managed; no credentials in record" },
+        { "k": "trust", "v": "review tier · declared egress · mcp-scan" }
+      ],
+      "why": "Renders as Claude/Pi JSON, Codex TOML, OpenCode's two key shapes — transport + sha256 + auth boundary.",
+      "rowSummary": "JSON copies as-is into Claude and Pi; Codex needs TOML, OpenCode v1/v2 JSON — one record, four emissions.",
+      "update": "No update flow anywhere — manual re-add (Claude entries replace, never merge); lockfile is the only cross-harness version pin."
+    },
+    {
+      "surface": "LSP",
+      "tagline": "Language servers bundled into Claude plugins for code-aware tools — one consumer of four",
+      "minimum": [
+        { "k": "servers map", "v": ".lsp.json: name → config entries" },
+        { "k": "mapping", "v": "extensionToLanguage — required per entry" },
+        { "k": "wrapper", "v": "must ride a plugin bundle; alt lspServers" },
+        { "k": "compat", "v": "codex/oc/pi supported=false — mark+skip" },
+        { "k": "versionSeal", "v": "rides parent plugin version + sha" },
+        { "k": "tier", "v": "review — bundles a server binary" }
+      ],
+      "why": "Only Claude loads LSP — the record marks three harnesses unsupported and wraps the server in a plugin bundle.",
+      "rowSummary": "translate/no-surface ×3 — Claude only, via a plugin-wrapped .lsp.json; Codex, OpenCode and Pi have no LSP surface.",
+      "update": "Rides the parent plugin — Claude plugin auto-update covers it; others need supported=false. The lockfile tracks the plugin version."
+    },
+    {
+      "surface": "CUSTOM TOOLS",
+      "tagline": "Custom agent tools as code — no drop-in file; OpenCode and Pi load them as TypeScript plugins",
+      "minimum": [
+        { "k": "tool spec", "v": "description + typed args (Zod/TypeBox)" },
+        { "k": "codegen", "v": "→ oc tool() plugin · pi.registerTool ext" },
+        { "k": "exposure", "v": "direct|model-only|codemode|deferred (pi)" },
+        { "k": "tier", "v": "review — code runs in-process, full OS" },
+        { "k": "compat", "v": "claude/codex supported=false (SDK only)" },
+        { "k": "sources", "v": "npm pkg @version + sha; no loose .ts pin" }
+      ],
+      "why": "Two harnesses load tools via generated code; two have no surface — record keeps a neutral spec + review tier.",
+      "rowSummary": "Claude's tools live in SDK code and Codex has none — only OpenCode and Pi, via codegen'd TypeScript.",
+      "update": "Updates ride npm plugins on OpenCode and Pi; Claude (SDK code) and Codex (none) have nothing to update — lockfile pins the generated pkg."
+    },
+    {
+      "surface": "STATUS LINE",
+      "tagline": "The custom status bar: a script Claude feeds session JSON; Pi reaches it via theme JSON",
+      "minimum": [
+        { "k": "script", "v": "executable + JSON-on-stdin contract" },
+        { "k": "settings key", "v": "statusLine → script path, per scope" },
+        { "k": "theme", "v": "strict JSON; name must equal filename" },
+        { "k": "overlays", "v": "pi theme fields; claude script variant" },
+        { "k": "compat", "v": "codex/oc supported=false — mark + skip" },
+        { "k": "versionSeal", "v": "sha256 on script + theme file" }
+      ],
+      "why": "Claude takes a script + settings key, Pi theme JSON — record carries both forms and marks two unsupported.",
+      "rowSummary": "Script copies as-is into Claude; Pi gets a theme-JSON overlay; Codex and OpenCode document no status-line surface.",
+      "update": "Claude's script updates by file replace; Pi themes ride pi update when packaged, manual as drops — no update channel; lockfile pins."
+    },
+    {
+      "surface": "EXEC POLICY",
+      "tagline": "Permission rules, sandboxes and trust gates — emitted from the record's declared requirements",
+      "minimum": [
+        { "k": "requires", "v": "runtime[], mcp[], network[], shell flag" },
+        { "k": "allow rules", "v": "→ claude permissions.allow statements" },
+        { "k": "sandbox", "v": "codex sandbox_mode + network_access" },
+        { "k": "effects", "v": "oc permissions[] action/resource/effect" },
+        { "k": "risk", "v": "trust.tier + capabilities[] at install" },
+        { "k": "compat", "v": "pi: no policy surface (YOLO) — skip" }
+      ],
+      "why": "Policy is derived not dropped: each gated harness gets a dialect of the declared requirements; Pi has no gate.",
+      "rowSummary": "Derived, not installed: Claude allow-rules, Codex .rules verbatim, OpenCode permission effects — Pi runs ungated.",
+      "update": "No auto-updates: managed keys admin-only (Claude), admins pin requirements.toml (Codex), orgs push oc policies — registry supplies diffs."
+    }
+  ]
+}

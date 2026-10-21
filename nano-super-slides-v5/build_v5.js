@@ -1,23 +1,27 @@
-/* nano-super v5 — "Building Our Own Registry" per-harness integration guide (25 slides).
+/* nano-super v5 — "Building Our Own Registry" per-harness integration guide (45 slides).
  *
  * Same v1 pixel/voxel house theme as v4, but rebuilt for readability and
  * CONSISTENCY:
  *   - pixel bitmaps are HEADINGS ONLY (kickers/titles/cover); all body text
  *     is native Segoe UI; Consolas is used only for real code (paths,
  *     manifests, CLI, registry fields)
- *   - all 20 harness topic slides come from ONE topicSlide() factory —
- *     same card grid, same six rows, same verdict chips; only the harness
- *     accent + content changes (fixes the v4 hero-metric inconsistency)
+ *   - slides 5-44 are TEN per-surface sections, one per matrix row (SKILLS
+ *     · COMMANDS · SUBAGENTS · HOOKS · PLUGINS · MCP · LSP · CUSTOM TOOLS ·
+ *     STATUS LINE · EXEC POLICY), four slides each: BANNER (registry
+ *     minimum + the matrix row) · STANDARDS (spec state) · CLAUDE + CODEX
+ *     pair · OPENCODE + PI pair
  *   - every topic card answers the same contract: WHAT · WHERE · FORMAT ·
- *     MANAGE · AUTO-UPDATE · VERDICT (+ REGISTRY EMISSION block)
+ *     MANAGE · AUTO-UPDATE · VERDICT (+ REGISTRY EMISSION block); pair
+ *     slides reuse the ONE topicCard() grid — only the accent + content
+ *     differ (fixes the v4 hero-metric inconsistency)
  *   - verdict chips are semantic + deck-wide: COPY-AS-IS green · TRANSLATE
  *     blue · OVERLAY amber · NO SURFACE gray
- *   - slide 24 translation matrix is DERIVED from the content files, so it
- *     can never drift from the chapters
+ *   - slide 4 translation matrix is DERIVED from the content files, so it
+ *     can never drift from the sections
  *
  * BUILD ORDER (sprites + content MUST exist first):
  *   1. ..\.venv\Scripts\python gen_sprites_v5.py  -> assets\ + manifest_v5.json
- *   2. content\content-{claude,codex,opencode,pi}.json (extraction agents)
+ *   2. content\content-{claude,codex,opencode,pi}.json + content\banners.json + content\standards.json (extraction agents)
  *   3. NODE_PATH=$(npm root -g) node build_v5.js
  */
 const pptxgen = require("pptxgenjs");
@@ -50,7 +54,7 @@ const VC = { // verdict chip colors — semantic, deck-wide
   "OVERLAY":    [P.AMBER, P.AMBER_T],
   "NO SURFACE": [P.MUT,   P.GRAY_T],
 };
-const W = 13.333, H = 7.5, MG = 0.55, TOTAL = 33;
+const W = 13.333, H = 7.5, MG = 0.55, TOTAL = 45;
 const SANS = "Segoe UI", MONO = "Consolas";
 const SH = 0.055; // hard-shadow offset (in)
 
@@ -58,11 +62,11 @@ const pad2 = (n) => String(n).padStart(2, "0");
 
 // ---------- content loading + schema contract ----------
 const GROUPS = [
-  { title: "SKILLS & COMMANDS",        tg: "tg1", topics: ["SKILLS", "COMMANDS"] },
-  { title: "SUBAGENTS & HOOKS",         tg: "tg2", topics: ["SUBAGENTS", "HOOKS"] },
-  { title: "PLUGINS & MARKETPLACES",    tg: "tg3", topics: ["PLUGINS"] },
-  { title: "MCP · LSP · CUSTOM TOOLS",  tg: "tg4", topics: ["MCP", "LSP", "CUSTOM TOOLS"] },
-  { title: "STATUS LINE & EXEC POLICY", tg: "tg5", topics: ["STATUS LINE", "EXEC POLICY"] },
+  { title: "SKILLS & COMMANDS",        topics: ["SKILLS", "COMMANDS"] },
+  { title: "SUBAGENTS & HOOKS",         topics: ["SUBAGENTS", "HOOKS"] },
+  { title: "PLUGINS & MARKETPLACES",    topics: ["PLUGINS"] },
+  { title: "MCP · LSP · CUSTOM TOOLS",  topics: ["MCP", "LSP", "CUSTOM TOOLS"] },
+  { title: "STATUS LINE & EXEC POLICY", topics: ["STATUS LINE", "EXEC POLICY"] },
 ];
 const CARD_KEYS = ["topic", "what", "where", "format", "manage", "autoupdate", "verdict", "why", "emission"];
 const BUDGETS = { what: 78, where: 62, format: 62, manage: 62, autoupdate: 78, why: 62 };
@@ -99,35 +103,72 @@ function loadHarness(key) {
 const CONTENT = ["claude", "codex", "opencode", "pi"].map(loadHarness);
 console.log(`content: 4 harness files validated against the card contract`);
 
-// specs section (slides 5-12): one explainer + one detail slide per spec
-const SPEC_IDS = ["skills", "plugins", "mcp", "subagents"];
-function loadSpecs() {
+// per-surface sections (slides 5-44): SURFACES is the exact matrix row
+// order — section i = banner (registry minimum) · standards · claude+codex
+// pair · opencode+pi pair
+const SURFACES = ["SKILLS", "COMMANDS", "SUBAGENTS", "HOOKS", "PLUGINS", "MCP", "LSP", "CUSTOM TOOLS", "STATUS LINE", "EXEC POLICY"];
+const HZ_ORDER = ["claude", "codex", "opencode", "pi"];
+
+function loadBanners() {
   let d;
   try {
-    d = JSON.parse(fs.readFileSync("content/specs.json", "utf8"));
+    d = JSON.parse(fs.readFileSync("content/banners.json", "utf8"));
   } catch (e) {
-    throw new Error("content/specs.json missing/unreadable — waiting on extraction agent");
+    throw new Error("content/banners.json missing/unreadable — waiting on extraction agent");
   }
-  const E = (m) => { throw new Error(`specs.json: ${m}`); };
-  if (!Array.isArray(d.specs) || d.specs.length !== 4) E("expected exactly 4 specs");
-  const SEC = ["what", "steward", "since", "adoption", "covers", "why", "next"];
-  const DET = ["fields", "rules", "harness", "gaps", "stance"];
-  d.specs.forEach((sp, i) => {
-    if (sp.id !== SPEC_IDS[i]) E(`spec ${i + 1} id "${sp.id}" != "${SPEC_IDS[i]}"`);
-    for (const k of SEC) if (typeof (sp.section || {})[k] !== "string" || !sp.section[k].length) E(`spec ${sp.id}: missing section.${k}`);
-    for (const k of DET) if (!(sp.detail || {})[k]) E(`spec ${sp.id}: missing detail.${k}`);
-    if (!Array.isArray(sp.detail.fields) || sp.detail.fields.length !== 6) E(`spec ${sp.id}: fields must have 6 rows`);
-    sp.detail.fields.forEach((f) => { if (!f.k || !f.v) E(`spec ${sp.id}: field row missing k/v`); });
-    ["rules", "gaps"].forEach((k) => {
-      if (!Array.isArray(sp.detail[k]) || sp.detail[k].length < 3 || sp.detail[k].length > 4) E(`spec ${sp.id}: ${k} must be 3-4 rows`);
-    });
-    if (!Array.isArray(sp.detail.harness) || sp.detail.harness.length !== 4) E(`spec ${sp.id}: harness must have 4 rows`);
-    sp.detail.harness.forEach((h, hi) => { if (h.harness !== ["claude", "codex", "opencode", "pi"][hi]) E(`spec ${sp.id}: harness row ${hi + 1} out of order`); });
+  const E = (m) => { throw new Error(`banners.json: ${m}`); };
+  if (!Array.isArray(d.banners) || d.banners.length !== 10) E("expected exactly 10 banners");
+  d.banners.forEach((b, i) => {
+    if (b.surface !== SURFACES[i]) E(`banner ${i + 1} surface "${b.surface}" != "${SURFACES[i]}"`);
+    for (const k of ["surface", "tagline", "why", "rowSummary", "update"]) {
+      if (typeof b[k] !== "string" || !b[k].length) E(`${b.surface}: missing ${k}`);
+    }
+    if (!Array.isArray(b.minimum) || b.minimum.length !== 6) E(`${b.surface}: minimum must have 6 rows`);
+    b.minimum.forEach((r) => { if (!r.k || !r.v) E(`${b.surface}: minimum row missing k/v`); });
   });
-  return d.specs;
+  return d.banners;
 }
-const SPECS = loadSpecs();
-console.log("content: specs.json validated (4 specifications)");
+const BANNERS = loadBanners();
+console.log("content: banners.json validated (10 registry-minimum banners)");
+
+function loadStandards() {
+  let d;
+  try {
+    d = JSON.parse(fs.readFileSync("content/standards.json", "utf8"));
+  } catch (e) {
+    throw new Error("content/standards.json missing/unreadable — waiting on extraction agent");
+  }
+  const E = (m) => { throw new Error(`standards.json: ${m}`); };
+  if (!Array.isArray(d.standards) || d.standards.length !== 10) E("expected exactly 10 standards");
+  d.standards.forEach((st, i) => {
+    if (st.surface !== SURFACES[i]) E(`standards ${i + 1} surface "${st.surface}" != "${SURFACES[i]}"`);
+    const D = st.detail || {};
+    for (const k of ["fields", "rules", "harness", "gaps", "stance"]) {
+      if (!D[k] || (typeof D[k] === "object" && !D[k].length)) E(`${st.surface}: missing detail.${k}`);
+    }
+    if (!Array.isArray(D.fields) || D.fields.length !== 6) E(`${st.surface}: fields must have 6 rows`);
+    D.fields.forEach((f) => { if (!f.k || !f.v) E(`${st.surface}: field row missing k/v`); });
+    if (!Array.isArray(D.rules) || D.rules.length !== 4) E(`${st.surface}: rules must have 4 rows`);
+    if (!Array.isArray(D.harness) || D.harness.length !== 4) E(`${st.surface}: harness must have 4 rows`);
+    D.harness.forEach((h, hi) => {
+      if (h.harness !== HZ_ORDER[hi]) E(`${st.surface}: harness row ${hi + 1} out of order`);
+      if (typeof h.note !== "string" || !h.note.length) E(`${st.surface}: harness row ${hi + 1} missing note`);
+    });
+    if (!Array.isArray(D.gaps) || D.gaps.length !== 3) E(`${st.surface}: gaps must have 3 rows`);
+  });
+  return d.standards;
+}
+const STANDARDS = loadStandards();
+console.log("content: standards.json validated (10 specification states)");
+
+// find one harness's card for a surface — shared by the matrix slide + banners
+function findCard(hz, topic) {
+  for (const sl of hz.slides) {
+    const c = sl.cards.find((x) => x.topic === topic);
+    if (c) return c;
+  }
+  throw new Error(`no card ${topic} in ${hz.harness}`);
+}
 
 // ---------- helpers (v4 pattern, objectName-threaded) ----------
 const pres = new pptxgen();
@@ -244,8 +285,8 @@ const monoW = (t, fs) => t.length * fs * 0.55 / 72;
 {
   const s = pres.addSlide();
   header(s, 2, "k02", "t02",
-    "every surface, in every harness, answers the same six questions — same card, same rows, same order; only the accent changes");
-  s.addNotes("The notation slide. Six facts per card, four verdicts, honest auto-update framing, and the five-slide chapter structure. This is the consistency contract for all 20 chapter slides.");
+    "every surface, in every harness, answers the same six questions — ten sections, one per matrix row, four slides each");
+  s.addNotes("The notation slide. Six facts per card, four verdicts, honest auto-update framing, and the four-slide section structure. This is the consistency contract for all 40 pair-slide cards.");
   // left: the six facts
   card(s, "s2_six", MG, 1.62, 6.55, 4.1);
   band(s, "THE SIX FACTS ON EVERY CARD", 0.85, 1.8, 5.9, P.BLUE, "s2_six_band");
@@ -283,10 +324,10 @@ const monoW = (t, fs) => t.length * fs * 0.55 / 72;
   band(s, "AUTO-UPDATE, HONESTLY", 7.65, 4.43, 4.8, P.MUT, "s2_au_band", 10);
   txt(s, "Only bundles update themselves — claude plugin marketplaces, codex marketplace upgrade, opencode plugin update, pi update.\nSkills, MCP servers, subagents and hooks are file-drops in all four. Version pinning is the registry's job.",
     { x: 7.65, y: 4.72, w: 4.85, h: 0.9, fontSize: 9.5, color: P.INK, lineSpacingMultiple: 1.2, objectName: "s2_au_t" });
-  // bottom: the five-slide chapter rail
+  // bottom: the four-slide section rail
   card(s, "s2_rail", MG, 5.87, 12.23, 1.1, P.BLUE_T);
-  band(s, "THE TEN SURFACES · FIVE SLIDES PER HARNESS", 0.85, 6.03, 8, P.BLUE, "s2_rail_band", 10);
-  const rail = ["1 · SKILLS + COMMANDS", "2 · SUBAGENTS + HOOKS", "3 · PLUGINS", "4 · MCP · LSP · TOOLS", "5 · STATUSLINE + EXEC"];
+  band(s, "TEN SECTIONS · ONE PER MATRIX ROW · FOUR SLIDES EACH", 0.85, 6.03, 8, P.BLUE, "s2_rail_band", 10);
+  const rail = ["1 BANNER", "2 STANDARDS", "3 CLAUDE + CODEX", "4 OPENCODE + PI"];
   let rx = 0.85;
   rail.forEach((t, i) => {
     rx += schip(s, rx, 6.38, t, P.INK, P.CARD, 9, `s2_rail_c${i}`) + 0.12;
@@ -351,7 +392,7 @@ const monoW = (t, fs) => t.length * fs * 0.55 / 72;
   txt(s, "auto-update row on every card → what the lock has to own", { x: 7.55, y: 5.62, w: 4.95, h: 0.3, fontSize: 9, italic: true, color: P.DK_MUT, objectName: "s3_lock_note" });
   // bottom strip
   card(s, "s3_note", MG, 6.32, 12.23, 0.72, P.GRAY_T);
-  txt(s, "every chapter card ends with a REGISTRY EMISSION block — those mono lines are the fields this record carries.\nThe chapters are the matrix; this slide is the row.",
+  txt(s, "every chapter card ends with a REGISTRY EMISSION block — those mono lines are the fields this record carries.\nThe sections are the matrix rows; this slide is the record.",
     { x: 0.85, y: 6.42, w: 11.6, h: 0.52, fontSize: 10, color: P.MUT, lineSpacingMultiple: 1.2, objectName: "s3_note_t" });
 }
 
@@ -359,8 +400,8 @@ const monoW = (t, fs) => t.length * fs * 0.55 / 72;
 {
   const s = pres.addSlide();
   header(s, 4, "k04", "t04",
-    "ten surfaces × four harnesses at a glance — derived from the same cards as the chapters · the specs behind these rows are next");
-  s.addNotes("The cheat sheet (user moved it to slide 4 on 2026-10-20). Verdict chips per surface per harness, plus the auto-update dot (green = the harness can update this artifact type itself). Derived at build time from the four content files. The specifications behind these rows follow on slides 5-12.");
+    "ten surfaces × four harnesses at a glance — every row opens a four-slide section next: banner · standards · claude+codex · opencode+pi");
+  s.addNotes("The cheat sheet (user moved it to slide 4 on 2026-10-20). Verdict chips per surface per harness, plus the auto-update dot (green = the harness can update this artifact type itself). Derived at build time from the four content files. Every row opens a four-slide section on slides 5-44: banner (registry minimum), standards (spec state), then the harnesses as claude+codex and opencode+pi card pairs.");
   card(s, "s04_mx", MG, 1.62, 12.23, 4.62);
   const tx = 0.85;
   const colW = 2.44, colX = (i) => 2.42 + i * 2.52;
@@ -369,16 +410,12 @@ const monoW = (t, fs) => t.length * fs * 0.55 / 72;
   CONTENT.forEach((hz, i) => txt(s, ACC[hz.accentKey].name, { x: colX(i), y: 1.8, w: colW, h: 0.24, fontSize: 9, bold: true, color: ACC[hz.accentKey].a, align: "center", charSpacing: 1, objectName: `s04_ch${i + 1}` }));
   // rows: canonical topic order across groups
   const allTopics = GROUPS.flatMap((g, gi) => CONTENT[0].slides[gi].cards.map((c) => c.topic));
-  const cardOf = (hz, topic) => {
-    for (const sl of hz.slides) { const c = sl.cards.find((x) => x.topic === topic); if (c) return c; }
-    throw new Error(`no card ${topic} in ${hz.harness}`);
-  };
   allTopics.forEach((topic, ri) => {
     const ry = 2.14 + ri * 0.402;
     hair(s, tx, ry, 11.68, `s04_hr${ri}`);
     txt(s, topic, { x: tx, y: ry, w: 1.5, h: 0.4, fontFace: MONO, fontSize: 8.5, bold: true, valign: "middle", objectName: `s04_r${ri}_lab` });
     CONTENT.forEach((hz, i) => {
-      const cd = cardOf(hz, topic);
+      const cd = findCard(hz, topic);
       const chw = 0.26 + cd.verdict.length * 7 * 0.0092;
       const dotX = colX(i) + (colW + chw + 0.16) / 2 + 0.06;
       verChip(s, colX(i) + (colW - chw - 0.16) / 2, ry + 0.07, cd.verdict, `s04_r${ri}c${i}`, 7);
@@ -396,55 +433,69 @@ const monoW = (t, fs) => t.length * fs * 0.55 / 72;
     { x: 6.6, y: 6.5, w: 5.9, h: 0.44, fontSize: 9, bold: true, color: P.INK, valign: "middle", lineSpacingMultiple: 1.1, objectName: "s04_take" });
 }
 
-// ================= SLIDES 5-12 — THE SPECIFICATIONS (explainer + detail pairs) =================
-// For each spec the matrix relies on: an explainer slide (what it is, who
-// stewards it, why the registry cares, what's next), then the detail slide
-// (fields · hard rules · four-harness divergence · gaps · registry stance).
+// ========= SLIDES 5-44 — TEN PER-SURFACE SECTIONS (matrix-row order) =========
+// Section i (1-based) = slides 5+4(i-1)..8+4(i-1), one per matrix row:
+// BANNER (registry minimum + the matrix row) · STANDARDS (spec state) ·
+// CLAUDE + CODEX pair · OPENCODE + PI pair (pair slides reuse topicCard()).
 
-const SPEC_RAIL = ["1 SKILLS", "2 PLUGINS", "3 MCP", "4 SUBAGENTS"];
-
-function specSectionSlide(n, sp, i) {
-  const S = sp.section;
+function bannerSlide(n, b, i) {
   const s = pres.addSlide();
-  header(s, n, `spk${i + 1}`, `sp_s${i + 1}`, S.what);
-  s.addNotes(`Spec ${i + 1}/4 explainer: ${sp.id}. ${S.why} Next: ${S.next}`);
-  // left: what this spec is
-  card(s, `s${n}_what`, MG, 1.62, 6.2, 3.4);
-  band(s, "WHAT THIS SPEC IS", 0.85, 1.8, 5.6, P.BLUE, `s${n}_wb`);
-  txt(s, S.what, { x: 0.85, y: 2.12, w: 5.6, h: 0.62, fontSize: 12, bold: true, lineSpacingMultiple: 1.15, objectName: `s${n}_wt` });
-  hair(s, 0.85, 2.84, 5.6, `s${n}_whr`);
-  const kv = [["STEWARD", S.steward], ["STATUS", S.since], ["ADOPTION", S.adoption], ["COVERS", S.covers]];
-  kv.forEach((r, j) => {
-    const ry = 2.96 + j * 0.5;
-    txt(s, r[0], { x: 0.85, y: ry, w: 1.1, h: 0.5, fontSize: 9, bold: true, color: P.MUT, valign: "middle", objectName: `s${n}_k${j}` });
-    txt(s, r[1], { x: 2.0, y: ry, w: 4.45, h: 0.5, fontSize: 10, color: P.INK, valign: "middle", lineSpacingMultiple: 1.1, objectName: `s${n}_v${j}` });
-    if (j < kv.length - 1) hair(s, 0.85, ry + 0.5, 5.6, `s${n}_hr${j}`);
+  header(s, n, `skb${i}`, `srf${i}`, b.tagline);
+  s.addNotes(`Section ${i}/10 banner: ${b.surface} — registry minimum (what we store), the matrix row (verdict + auto-update dot per harness), and this surface's update posture.`);
+  // left: the registry minimum
+  card(s, `s${n}_min`, MG, 1.62, 6.2, 4.55);
+  band(s, "REGISTRY MINIMUM — WHAT WE STORE", 0.85, 1.78, 5.6, P.BLUE, `s${n}_mb`, 9.5);
+  b.minimum.forEach((r, j) => {
+    const ry = 2.1 + j * 0.42;
+    txt(s, r.k, { x: 0.85, y: ry, w: 1.6, h: 0.42, fontFace: MONO, fontSize: 9, bold: true, valign: "middle", objectName: `s${n}_mk${j}` });
+    txt(s, r.v, { x: 2.45, y: ry, w: 3.5, h: 0.42, fontFace: MONO, fontSize: 8.5, color: P.INK, valign: "middle", objectName: `s${n}_mv${j}` });
+    hair(s, 0.85, ry + 0.42, 5.6, `s${n}_mhr${j}`);
   });
-  // right: why the registry cares
-  card(s, `s${n}_why`, 7.0, 1.62, 5.78, 3.4);
-  band(s, "WHY THE REGISTRY CARES", 7.3, 1.8, 5.2, P.BLUE, `s${n}_yb`);
-  txt(s, S.why, { x: 7.3, y: 2.14, w: 5.2, h: 2.6, fontSize: 11.5, color: P.INK, lineSpacingMultiple: 1.3, objectName: `s${n}_yt` });
-  // bottom left: on the next slide
-  card(s, `s${n}_next`, MG, 5.17, 6.2, 1.7, P.BLUE_T);
-  band(s, "ON THE NEXT SLIDE", 0.85, 5.33, 5.0, P.BLUE, `s${n}_nb`, 10);
-  txt(s, S.next, { x: 0.85, y: 5.64, w: 5.35, h: 1.05, fontSize: 10.5, color: P.INK, lineSpacingMultiple: 1.2, objectName: `s${n}_nt` });
-  arrowH(s, 6.05, 6.5, 6.0, P.BLUE, `s${n}_na`);
-  // bottom right: the spec series rail (current highlighted)
-  card(s, `s${n}_rail`, 7.0, 5.17, 5.78, 1.7);
-  band(s, "THE SPEC SERIES", 7.3, 5.33, 5.0, P.MUT, `s${n}_rb2`, 10);
-  let rx = 7.3;
-  SPEC_RAIL.forEach((t, j) => {
-    const cur = j === i;
-    rx += schip(s, rx, 5.68, t, cur ? "FFFFFF" : P.INK, cur ? P.BLUE : P.CARD, 9, `s${n}_rc${j}`, cur ? P.BLUE : P.INK) + 0.15;
+  txt(s, b.why, { x: 0.85, y: 5.45, w: 5.6, h: 0.6, fontSize: 9.5, italic: true, color: P.MUT, lineSpacingMultiple: 1.15, objectName: `s${n}_mwhy` });
+  // right top: the matrix row, derived from the harness cards
+  card(s, `s${n}_row`, 7.0, 1.62, 5.78, 3.4);
+  band(s, "THE MATRIX ROW", 7.3, 1.78, 5.2, P.MUT, `s${n}_rb`);
+  CONTENT.forEach((hz, j) => {
+    const A = ACC[hz.accentKey];
+    const cd = findCard(hz, b.surface);
+    const ry = 2.12 + j * 0.56;
+    sq(s, 7.3, ry + 0.22, 0.12, A.a, `s${n}_rb${j}`);
+    txt(s, A.name, { x: 7.54, y: ry, w: 1.45, h: 0.56, fontSize: 9.5, bold: true, valign: "middle", objectName: `s${n}_rk${j}` });
+    const chw = 0.26 + cd.verdict.length * 7 * 0.0092;
+    verChip(s, 9.05, ry + 0.12, cd.verdict, `s${n}_rc${j}`, 7);
+    sq(s, 9.05 + chw + 0.12, ry + 0.24, 0.075, /^y/i.test(cd.autoupdate) ? P.GREEN : "C7CAD1", `s${n}_rd${j}`);
   });
+  hair(s, 7.3, 2.12 + 4 * 0.56, 5.2, `s${n}_rhr`);
+  txt(s, b.rowSummary, { x: 7.3, y: 4.52, w: 5.2, h: 0.45, fontSize: 9.5, color: P.MUT, lineSpacingMultiple: 1.15, objectName: `s${n}_rsum` });
+  // right bottom: auto-update for this surface
+  card(s, `s${n}_au`, 7.0, 5.17, 5.78, 1.7, P.GRAY_T);
+  band(s, "AUTO-UPDATE FOR THIS SURFACE", 7.3, 5.33, 5.2, P.MUT, `s${n}_ab`, 10);
+  txt(s, b.update, { x: 7.3, y: 5.64, w: 5.2, h: 1.15, fontSize: 10, color: P.INK, lineSpacingMultiple: 1.2, objectName: `s${n}_at` });
+  // bottom left: this section's four slides (current highlighted)
+  card(s, `s${n}_sec`, MG, 5.17, 6.2, 1.7, P.BLUE_T);
+  band(s, "THIS SECTION", 0.85, 5.33, 5.0, P.BLUE, `s${n}_secb`, 10);
+  const steps = ["BANNER", "STANDARDS", "CLAUDE + CODEX", "OPENCODE + PI"];
+  const chipW = (t) => 0.26 + t.length * 9 * 0.0092;
+  const withArrows = steps.reduce((a, t) => a + chipW(t), 0) + steps.length * 0.12 + (steps.length - 1) * 0.42 <= 5.6;
+  let sx = 0.85;
+  steps.forEach((t, j) => {
+    const cur = j === 0;
+    sx += schip(s, sx, 5.68, t, cur ? "FFFFFF" : P.INK, cur ? P.BLUE : P.CARD, 9, `s${n}_sc${j}`, cur ? P.BLUE : P.INK) + 0.12;
+    if (withArrows && j < steps.length - 1) {
+      arrowH(s, sx, sx + 0.3, 5.865, P.INK, `s${n}_sa${j}`);
+      sx += 0.42;
+    }
+  });
+  txt(s, "four slides per surface — spec state, then the harnesses in two pairs",
+    { x: 0.85, y: 6.32, w: 5.6, h: 0.25, fontSize: 9, color: P.MUT, objectName: `s${n}_sect` });
 }
 
-function specDetailSlide(n, sp, i) {
-  const D = sp.detail;
+function standardsSlide(n, st, i) {
+  const D = st.detail;
   const s = pres.addSlide();
-  header(s, n, `spk${i + 1}`, `sp_d${i + 1}`,
-    "the fields, the hard rules, how the four harnesses diverge — and what the registry does about the gaps");
-  s.addNotes(`Spec ${i + 1}/4 detail: ${sp.id} contract — fields, rules, per-harness divergence, gaps, stance.`);
+  header(s, n, `sks${i}`, `st${i}`,
+    `the ${st.surface.toLowerCase()} specification state — fields, rules, how the four diverge, and what the registry does about it`);
+  s.addNotes(`Section ${i}/10 standards: ${st.surface} — fields, hard rules, per-harness divergence, gaps, registry stance.`);
   // left: the fields + hard rules
   card(s, `s${n}_f`, MG, 1.62, 6.2, 4.55);
   band(s, "THE FIELDS", 0.85, 1.78, 5.6, P.BLUE, `s${n}_fb`);
@@ -481,12 +532,7 @@ function specDetailSlide(n, sp, i) {
     { x: 0.85, y: 6.4, w: 11.6, h: 0.56, fontSize: 9.5, color: P.MUT, valign: "middle", lineSpacingMultiple: 1.15, objectName: `s${n}_gt` });
 }
 
-SPECS.forEach((sp, i) => {
-  specSectionSlide(5 + i * 2, sp, i);
-  specDetailSlide(6 + i * 2, sp, i);
-});
-
-// ===================== SLIDES 13-32 — HARNESS CHAPTERS (the 20 topic slides) =====================
+// ================== THE CARD GRID (both pair slides of every section) ==================
 // ONE factory: identical grid per card count, identical row order, identical
 // chips — only the harness accent + content differ. No vanity heroes.
 
@@ -537,30 +583,29 @@ function topicCard(s, tag, x, y, w, h, cd, A, nCards) {
   txt(s, cd.emission.join("\n"), { x: x + 0.42, y: ey + 0.36, w: innerW, h: eh - 0.44, fontFace: MONO, fontSize: efs, color: P.INK, lineSpacingMultiple: 1.25, valign: "top", objectName: `${tag}_em` });
 }
 
-function topicSlide(n, hz, gi) {
-  const g = GROUPS[gi];
-  const A = ACC[hz.accentKey];
-  const sl = hz.slides[gi];
+// pair slide — two harness cards for this surface side by side, no cube
+// (two harnesses share the slide; the accents live on the cards themselves)
+function pairSlide(n, i, hzA, hzB, side) {
+  const surface = SURFACES[i - 1];
+  const A = ACC[hzA.accentKey], B = ACC[hzB.accentKey];
   const s = pres.addSlide();
-  header(s, n, `k${pad2(n)}`, g.tg, `${hz.name} ${hz.version} — ${hz.intro.what}`, A.cube);
-  s.addNotes(`${hz.name} ${hz.version}, topic slide ${gi + 1}/5: ${g.title}. Cards: ${sl.cards.map((c) => c.topic).join(", ")}. Trust model: ${hz.intro.trust}`);
-  const nCards = sl.cards.length;
-  const y = 1.62, h = 5.35;
-  if (nCards === 1) {
-    topicCard(s, `s${n}_c0`, MG, y, 12.23, h, sl.cards[0], A, 1);
-  } else if (nCards === 2) {
-    topicCard(s, `s${n}_c0`, MG, y, 5.99, h, sl.cards[0], A, 2);
-    topicCard(s, `s${n}_c1`, MG + 6.24, y, 5.99, h, sl.cards[1], A, 2);
-  } else {
-    sl.cards.forEach((cd, i) => topicCard(s, `s${n}_c${i}`, MG + i * 4.15, y, 3.93, h, cd, A, 3));
-  }
+  header(s, n, side === "c" ? `skc${i}` : `sko${i}`, `srf${i}`,
+    side === "c"
+      ? `${surface} in claude code + codex — the two most popular first`
+      : `${surface} in opencode + pi`);
+  s.addNotes(`Section ${i}/10 (${surface}), ${side === "c" ? "claude code + codex" : "opencode + pi"} pair: ${A.name} and ${B.name} cards for this surface — same six facts, same emission block.`);
+  topicCard(s, `s${n}_c0`, MG, 1.62, 5.99, 5.35, findCard(hzA, surface), A, 2);
+  topicCard(s, `s${n}_c1`, MG + 6.24, 1.62, 5.99, 5.35, findCard(hzB, surface), B, 2);
 }
 
-CONTENT.forEach((hz, hi) => {
-  for (let gi = 0; gi < 5; gi++) topicSlide(13 + hi * 5 + gi, hz, gi);
+BANNERS.forEach((b, i) => {
+  bannerSlide(5 + i * 4, b, i + 1);
+  standardsSlide(6 + i * 4, STANDARDS[i], i + 1);
+  pairSlide(7 + i * 4, i + 1, CONTENT[0], CONTENT[1], "c");
+  pairSlide(8 + i * 4, i + 1, CONTENT[2], CONTENT[3], "o");
 });
 
-// ============================ SLIDE 33 — CLOSER (dark) ============================
+// ============================ SLIDE 45 — CLOSER (dark) ============================
 {
   const s = pres.addSlide();
   s.background = { color: P.DK_BG };

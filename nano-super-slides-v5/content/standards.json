@@ -1,0 +1,314 @@
+{
+  "standards": [
+    {
+      "surface": "SKILLS",
+      "detail": {
+        "fields": [
+          { "k": "name", "v": "req; 1–64 chars [a-z0-9-]; must match dir name" },
+          { "k": "description", "v": "req; 1–1024 chars; what + when; keyword-rich" },
+          { "k": "license", "v": "opt; license name or pointer to bundled file" },
+          { "k": "compatibility", "v": "opt; 1–500 chars; env requirements" },
+          { "k": "metadata", "v": "opt; string→string map; sanctioned extension channel" },
+          { "k": "allowed-tools", "v": "opt; experimental; support varies by client" }
+        ],
+        "rules": [
+          "name+description required; all other fields optional",
+          "Respect char limits: name ≤64, description ≤1024",
+          "metadata map is the only sanctioned extension channel",
+          "Vendor top-level fields break claude.ai — use overlays"
+        ],
+        "harness": [
+          { "harness": "claude", "note": "Adds extras; claude.ai hard-errors non-spec fields" },
+          { "harness": "codex", "note": "Spec fields + agents/openai.yaml sidecar" },
+          { "harness": "opencode", "note": "metadata.opencode/* keys; license ignored" },
+          { "harness": "pi", "note": "Spec fields; name need not match dir" }
+        ],
+        "gaps": [
+          "No version field; registry must own semver + seals",
+          "No dependencies, signing, or discovery paths in spec",
+          "allowed-tools experimental — support varies by client"
+        ],
+        "stance": "Spec-pure SKILL.md + namespaced metadata keys — the one artifact all four consume"
+      }
+    },
+    {
+      "surface": "COMMANDS",
+      "detail": {
+        "fields": [
+          { "k": "description", "v": "req de-facto; what+when — mirrors SKILL.md" },
+          { "k": "argument-hint", "v": "opt; usage hint shown at slash invocation" },
+          { "k": "arguments", "v": "$ARGUMENTS + $1..$N placeholders in body" },
+          { "k": "agent/model", "v": "opt (opencode): agent, subtask, model keys" },
+          { "k": "filename", "v": "file path = command name + namespace" },
+          { "k": "dirs", "v": "commands/ vs prompts/ — per-harness paths" }
+        ],
+        "rules": [
+          "De-facto: no commands spec — rides skills frontmatter",
+          "Filename is the identity: /cmd = file path in dirs",
+          "Emit as skill first — claude merged, codex deprecated",
+          "Codex prompts user-only — never repo-share there"
+        ],
+        "harness": [
+          { "harness": "claude", "note": ".claude/commands; merged into skills, works" },
+          { "harness": "codex", "note": "~/.codex/prompts flat md; DEPRECATED, user-only" },
+          { "harness": "opencode", "note": ".opencode/commands; nested dirs = namespace" },
+          { "harness": "pi", "note": "~/.pi/agent/prompts; filename is the command" }
+        ],
+        "gaps": [
+          "No spec, no shared dir; filename rules differ",
+          "Codex user-only blocks repo-distributed commands",
+          "Registry must dual-emit command + skill artifact"
+        ],
+        "stance": "A command is a skill with a filename — emit the skill, drop legacy .md where paths still load"
+      }
+    },
+    {
+      "surface": "SUBAGENTS",
+      "detail": {
+        "fields": [
+          { "k": "name", "v": "req (de-facto); ≤256 chars; no colons" },
+          { "k": "description", "v": "req; delegation trigger — no whenToUse field" },
+          { "k": "tools", "v": "opt; allowlist; supports mcp__github__*" },
+          { "k": "model", "v": "opt; sonnet|opus|haiku|<id>|inherit" },
+          { "k": "skills", "v": "opt; preload ≤32 skill bodies" },
+          { "k": "mcpServers", "v": "opt; per-agent MCP server set" }
+        ],
+        "rules": [
+          "Fields below are Claude's de-facto shape — no spec exists",
+          "Body of the md file is the system prompt",
+          "Codex: TOML requires developer_instructions — generate it",
+          "Pi: example extension only; mark unsupported"
+        ],
+        "harness": [
+          { "harness": "claude", "note": ".claude/agents/*.md — the canonical shape" },
+          { "harness": "codex", "note": ".codex/agents/*.toml; 3 fields required" },
+          { "harness": "opencode", "note": "md dialect: mode + permissions (desc req)" },
+          { "harness": "pi", "note": "Example ext only; mirrors Claude shape" }
+        ],
+        "gaps": [
+          "No spec, no shared fields, no versioning at all",
+          "Each harness needs its own emitter transform",
+          "Pi users must install the example extension"
+        ],
+        "stance": "Model on the claude md shape; translate to codex TOML; mark pi unsupported"
+      }
+    },
+    {
+      "surface": "HOOKS",
+      "detail": {
+        "fields": [
+          { "k": "hooks.<Event>", "v": "event → [{matcher, hooks[]}] array" },
+          { "k": "matcher", "v": "tool-name filter: exact, | alts, regex" },
+          { "k": "type", "v": "command|http|mcp_tool|prompt|agent" },
+          { "k": "command", "v": "shell cmd + timeout (600s default)" },
+          { "k": "stdin JSON", "v": "session_id, cwd, tool_name, tool_input" },
+          { "k": "exit codes", "v": "0 ok/controls · 2 block+stderr · other warn" }
+        ],
+        "rules": [
+          "De-facto: Claude hooks JSON — no cross-vendor standard",
+          "Codex fires a compatible 12-event subset — target it",
+          "Hooks merge across every settings/config layer",
+          "Hooks run shell code — review tier; diff at install"
+        ],
+        "harness": [
+          { "harness": "claude", "note": "Native: settings + plugin hooks.json; ~30 events" },
+          { "harness": "codex", "note": "hooks.json Claude-shape; 12 events; trust-gated" },
+          { "harness": "opencode", "note": "No file — codegen TS plugin: tool.execute.*" },
+          { "harness": "pi", "note": "No file — codegen TS ext: pi.on(tool_call)" }
+        ],
+        "gaps": [
+          "No standard; OpenCode+Pi need TS codegen adapters",
+          "Event mismatch: ~30 claude vs 12 codex vs TS APIs",
+          "Handler types beyond command don't all port (http, agent)"
+        ],
+        "stance": "Normalize on Claude's hooks JSON, target the 12-event subset, codegen TS for the rest"
+      }
+    },
+    {
+      "surface": "PLUGINS",
+      "detail": {
+        "fields": [
+          { "k": "$schema", "v": "req; exact URL agent-plugins.org/schemas/1.0.0" },
+          { "k": "name", "v": "req; 1–64 chars [a-z0-9.-]; alphanumeric ends" },
+          { "k": "version", "v": "opt; type-only; semver recommended, not enforced" },
+          { "k": "author", "v": "{name,email,url}; part of closed 9-field set" },
+          { "k": "keywords", "v": "opt; string array (one of the closed 9)" },
+          { "k": "extensions", "v": "map of reverse-DNS namespaces; client-defined" }
+        ],
+        "rules": [
+          "plugin.json = closed 9-field set; unknown fields warn+ignore",
+          "$schema + name required; version type-checked only",
+          "Artifacts = skills + mcp.json only; no commands/hooks/agents",
+          "mcp.json: non-loopback URLs HTTPS; no OAuth fields in v1"
+        ],
+        "harness": [
+          { "harness": "claude", "note": "No — uses own .claude-plugin/; declined .agents/" },
+          { "harness": "codex", "note": "YES — root plugin.json + .codex-plugin/ overlay" },
+          { "harness": "opencode", "note": "No — npm TS plugins; spec never mentioned" },
+          { "harness": "pi", "note": "No — npm packages w/ keyword pi-package" }
+        ],
+        "gaps": [
+          "No marketplace/distribution/install in spec",
+          "Only 2 component types; commands/hooks/agents excluded",
+          "No signing; no auth/credentials; Claude absent"
+        ],
+        "stance": "Bundle = packaging substrate; dual-emit .claude-plugin/ until Anthropic converges"
+      }
+    },
+    {
+      "surface": "MCP",
+      "detail": {
+        "fields": [
+          { "k": "name", "v": "reverse-DNS id, e.g. io.github.user/server" },
+          { "k": "version", "v": "per-name versions + status via API" },
+          { "k": "repository", "v": "{url,source,id,subfolder}" },
+          { "k": "packages[]", "v": "npm|pypi|nuget|cargo|oci|mcpb; URL allowlist" },
+          { "k": "remotes[]", "v": "url templates + headers" },
+          { "k": "_meta", "v": "publisher-provided only; 4 KiB cap" }
+        ],
+        "rules": [
+          "Metadata-only, no code hosting; packages live on npm/PyPI",
+          "Namespace proof to publish: GitHub OIDC or DNS challenge",
+          "No private servers, no scanning — delegated to registries",
+          "OpenAPI /v0.1/servers; aggregators pull ~hourly"
+        ],
+        "harness": [
+          { "harness": "claude", "note": "mcpServers JSON — the de-facto shape" },
+          { "harness": "codex", "note": "Needs TOML: [mcp_servers.<id>] in config" },
+          { "harness": "opencode", "note": "JSON config mcp.servers.<name> (v2)" },
+          { "harness": "pi", "note": "Copies Claude mcp.json entries as-is" }
+        ],
+        "gaps": [
+          "MCP-only: no skills/plugins coverage",
+          "No private servers; scanning delegated",
+          "Config syntax splits: JSON everywhere but Codex TOML"
+        ],
+        "stance": "Store server.json-shaped metadata; emit mcp.json + JSON/TOML configs mechanically"
+      }
+    },
+    {
+      "surface": "LSP",
+      "detail": {
+        "fields": [
+          { "k": "name", "v": "key in .lsp.json name→config map" },
+          { "k": "command", "v": "language-server launch cmd + args" },
+          { "k": "extToLang", "v": "extensionToLanguage map — required" },
+          { "k": "lspServers", "v": "alt: plugin.json key; entries merge" },
+          { "k": "location", "v": "plugin root only — no standalone drop" },
+          { "k": "events", "v": "opencode: lsp.client.diagnostics/updated" }
+        ],
+        "rules": [
+          "No standard anywhere; only claude loads LSP",
+          "De-facto: entry invalid without extensionToLanguage",
+          "Plugin-bound surface — wrap in a plugin to ship",
+          "Mark codex/opencode/pi unsupported at install"
+        ],
+        "harness": [
+          { "harness": "claude", "note": "Plugin .lsp.json or lspServers key (merges)" },
+          { "harness": "codex", "note": "None — absent from docs (rust-v0.163.0)" },
+          { "harness": "opencode", "note": "lsp config key; shape undocumented; events only" },
+          { "harness": "pi", "note": "None — no LSP surface in Pi 1.3.0" }
+        ],
+        "gaps": [
+          "Single-vendor surface; nothing portable yet",
+          "OpenCode lsp key undocumented — no schema",
+          "No versioning or discovery for LSP bundles"
+        ],
+        "stance": "Wrap .lsp.json entries in a Claude plugin; mark three of four harnesses unsupported"
+      }
+    },
+    {
+      "surface": "CUSTOM TOOLS",
+      "detail": {
+        "fields": [
+          { "k": "name", "v": "tool id → mcp__<server>__<tool>" },
+          { "k": "description", "v": "what it does; model-visible text" },
+          { "k": "inputSchema", "v": "args schema: JSON / Zod / TypeBox" },
+          { "k": "execute", "v": "handler — TS fn or MCP server call" },
+          { "k": "transport", "v": "in-process | stdio | streamable-http" },
+          { "k": "exposure", "v": "pi: direct|model-only|codemode|deferred" }
+        ],
+        "rules": [
+          "De-facto: expose custom tools as MCP servers",
+          "Code-run tools ship review tier — in-process risk",
+          "Codex registers none — declare unsupported",
+          "Claude: SDK-only surface, no file-drop artifact"
+        ],
+        "harness": [
+          { "harness": "claude", "note": "Agent SDK customTools — in-process MCP" },
+          { "harness": "codex", "note": "None; [tools]/[tool_suggest] toggles only" },
+          { "harness": "opencode", "note": "tool() in TS plugin; Zod args schema" },
+          { "harness": "pi", "note": "pi.registerTool; TypeBox + exposure flags" }
+        ],
+        "gaps": [
+          "Schemas diverge: JSON vs Zod vs TypeBox",
+          "No installable artifact — tools live in code",
+          "Nothing to version, hash, or pin per tool"
+        ],
+        "stance": "Define tools once as MCP; codegen Zod/TypeBox wrappers where harnesses demand code"
+      }
+    },
+    {
+      "surface": "STATUS LINE",
+      "detail": {
+        "fields": [
+          { "k": "type", "v": "statusline script | theme json | none" },
+          { "k": "statusLine", "v": "claude settings key → script path+args" },
+          { "k": "input", "v": "JSON session state on stdin (claude)" },
+          { "k": "theme.json", "v": "colors/look; pi: name must equal filename" },
+          { "k": "scope", "v": "user|project|local|managed settings" },
+          { "k": "widgets", "v": "live TUI needs extension code (pi ctx.ui)" }
+        ],
+        "rules": [
+          "No statusline standard — claude's key is de-facto",
+          "Themes are look-only; no live session data feed",
+          "Pi theme schema strict: name must equal filename",
+          "Codex has no surface — skip; [tui] keys unrelated"
+        ],
+        "harness": [
+          { "harness": "claude", "note": "statusLine key → script; /statusline wizard" },
+          { "harness": "codex", "note": "None; closest [tui] notification keys" },
+          { "harness": "opencode", "note": "No statusline; themes/*.json adjacent" },
+          { "harness": "pi", "note": "themes/<n>.json; ctx.ui.* via extensions" }
+        ],
+        "gaps": [
+          "Statusline exists on one harness only",
+          "Theme JSON schemas differ per harness",
+          "No shared session-state input schema"
+        ],
+        "stance": "Per-harness overlays: statusline script for claude; theme JSON only where schemas exist"
+      }
+    },
+    {
+      "surface": "EXEC POLICY",
+      "detail": {
+        "fields": [
+          { "k": "permissions", "v": "tool allow/deny rules the artifact needs" },
+          { "k": "sandbox", "v": "read-only | workspace-write | full" },
+          { "k": "network", "v": "egress bool/domains for workspace-write" },
+          { "k": "filesystem", "v": "write paths/globs beyond the workspace" },
+          { "k": "approval", "v": "ask|auto per action; codex granular" },
+          { "k": "tier", "v": "standard|review — install diff + gates" }
+        ],
+        "rules": [
+          "De-facto: declare needs once; derive per harness",
+          "Emit least privilege — only real needs become rules",
+          "Admin layers outrank everything — emitters never fight",
+          "Pi enforces nothing — surface tier+capabilities instead"
+        ],
+        "harness": [
+          { "harness": "claude", "note": "settings permissions.allow/deny; managed keys" },
+          { "harness": "codex", "note": "sandbox_mode + approval_policy + Starlark .rules" },
+          { "harness": "opencode", "note": "permissions[] {action,resource,effect}" },
+          { "harness": "pi", "note": "None — YOLO; trust gate + codemode sandbox" }
+        ],
+        "gaps": [
+          "No shared grammar for allow/ask/deny across 4",
+          "Pi cannot enforce — registry must warn at install",
+          "Policy is mutable settings; nothing versioned"
+        ],
+        "stance": "Declare permissions, sandbox, network once; each emitter derives its own dialect"
+      }
+    }
+  ]
+}

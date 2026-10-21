@@ -1,4 +1,4 @@
-"""v5 asset generator — "Building Our Own Registry" deck (25 slides).
+"""v5 asset generator — "Building Our Own Registry" deck (45 slides).
 
 Same v1 pixel/voxel house style and toolchain as v4 (importlib load of
 nano-super-slides-v1/gen_assets.py -> 5x7 bitmap font F + render).
@@ -6,15 +6,19 @@ nano-super-slides-v1/gen_assets.py -> 5x7 bitmap font F + render).
 READABILITY RULE (v5): pixel bitmaps are HEADINGS ONLY — cover/kicker/title
 bitmaps below. All body text is native Segoe UI / Consolas in build_v5.js.
 
-Structure (25 slides):
-  1 cover (dark) · 2 how-to-read · 3 data model · 4-23 four harness
-  chapters x 5 topic slides (claude 4-8, codex 9-13, opencode 14-18,
-  pi 19-23) · 24 translation matrix · 25 closer (dark).
+Structure (45 slides):
+  1 cover (dark) · 2 how-to-read · 3 data model · 4 translation matrix ·
+  5-44 TEN per-surface sections x 4 slides (matrix-row order: SKILLS,
+  COMMANDS, SUBAGENTS, HOOKS, PLUGINS, MCP, LSP, CUSTOM TOOLS, STATUS
+  LINE, EXEC POLICY) · 45 closer (dark).
 
-  - chapter kickers k04..k23 are HARNESS-ACCENT colored (amber/green/
-    blue/purple) so the chapter reads at a glance; frame kickers stay BLUE
-  - topic titles tg1..tg5 are shared across all four chapters (identical
-    layout contract per chapter)
+  - section i (1-based) = slides 5+4(i-1)..8+4(i-1): banner · standards ·
+    claude+codex pair · opencode+pi pair
+  - every light-slide kicker is BLUE (no accent kickers remain):
+    skb/sks/skc/sko per section — "S · i OF 10[ · SPEC | · CLAUDE + CODEX
+    | · OPENCODE + PI]"; frame kickers k02-k04 stay BLUE too
+  - srf = shared surface title (banner + both pair slides); st = the
+    per-surface standards title
   - voxel art: runner, cube_claude/codex/opencode/pi, machine, cup
     (no game in v5 — machine is static closer art)
 
@@ -65,24 +69,20 @@ CAB = (0x24, 0x27, 0x2F)            # 24272F (machine cabinet)
 DLINE = (0x3C, 0x41, 0x4C)          # 3C414C (machine door lines)
 
 ART_PAL = {INK, BLUE, WHITE, LBLUE, GREEN, AMBER, PURPLE, RED, GOLD, CREME, CAB, DLINE}
-# headings may use any harness accent; body text is native (not bitmaps)
+# headings are INK or BLUE (cover uses WHITE/LBLUE); body text is native (not bitmaps)
 TEXT_PAL = {INK, BLUE, WHITE, LBLUE, GREEN, AMBER, PURPLE}
 
 # ---------- heading bitmaps ----------
-# topic-group titles, shared by all four harness chapters
-TOPIC_TITLES = [
-    ("tg1", "SKILLS & COMMANDS"),
-    ("tg2", "SUBAGENTS & HOOKS"),
-    ("tg3", "PLUGINS & MARKETPLACES"),
-    ("tg4", "MCP · LSP · CUSTOM TOOLS"),
-    ("tg5", "STATUS LINE & EXEC POLICY"),
+# the 10 surfaces in matrix order — one 4-slide section each (slides 5-44)
+SURFACES = [
+    "SKILLS", "COMMANDS", "SUBAGENTS", "HOOKS", "PLUGINS",
+    "MCP", "LSP", "CUSTOM TOOLS", "STATUS LINE", "EXEC POLICY",
 ]
-# chapter order == deck order: claude 4-8 · codex 9-13 · opencode 14-18 · pi 19-23
-CHAPTERS = [
-    ("CLAUDE CODE", AMBER),
-    ("CODEX", GREEN),
-    ("OPENCODE", BLUE),
-    ("PI", PURPLE),
+# standards-slide titles, fixed list in the same matrix order
+ST_TITLES = [
+    "THE SKILL.MD CONTRACT", "NO OWN SPEC", "THE DE-FACTO FORMATS", "THE HOOKS JSON SHAPE",
+    "THE PLUGIN.JSON CONTRACT", "MCP CONFIG + SERVER.JSON", "NO LSP STANDARD",
+    "NO TOOL SPECIFICATION", "NO STATUSLINE STANDARD", "NO POLICY STANDARD",
 ]
 
 TEXTS = [
@@ -98,31 +98,19 @@ TEXTS = [
     # matrix — slide 4 (user moved it up from 24 on 2026-10-20)
     ("k04", "THE CHEAT SHEET", BLUE, 8),
     ("t04", "TRANSLATION MATRIX", INK, 16),
-    # specifications section — slides 5-12 (explainer + detail per spec)
-    ("spk1", "SPECIFICATIONS · 1 OF 4", BLUE, 8),
-    ("spk2", "SPECIFICATIONS · 2 OF 4", BLUE, 8),
-    ("spk3", "SPECIFICATIONS · 3 OF 4", BLUE, 8),
-    ("spk4", "SPECIFICATIONS · 4 OF 4", BLUE, 8),
-    ("sp_s1", "AGENT SKILLS", INK, 16),
-    ("sp_d1", "THE SKILL.MD CONTRACT", INK, 16),
-    ("sp_s2", "AGENT PLUGINS", INK, 16),
-    ("sp_d2", "THE PLUGIN.JSON CONTRACT", INK, 16),
-    ("sp_s3", "MCP + ITS REGISTRY", INK, 16),
-    ("sp_d3", "MCP CONFIG + SERVER.JSON", INK, 16),
-    ("sp_s4", "SUBAGENTS", INK, 16),
-    ("sp_d4", "THE DE-FACTO FORMATS", INK, 16),
     # closer (dark) — non-numeric keys so slide renumbering can never collide
     ("kz", "THANK YOU · NOW GO EMIT", LBLUE, 8),
     ("tz", "ONE REGISTRY · EVERY AGENT", WHITE, 16),
 ]
-# chapter kickers, accent-colored: "CLAUDE CODE · 1 OF 5" ...
-# chapters start at slide 13 (after matrix@4 + specs@5-12): claude 13-17 · codex 18-22 · opencode 23-27 · pi 28-32
-for ci, (cname, ccol) in enumerate(CHAPTERS):
-    for g in range(1, 6):
-        slide = 13 + ci * 5 + (g - 1)
-        TEXTS.append((f"k{slide:02d}", f"{cname} · {g} OF 5", ccol, 8))
-# shared topic titles, INK @16
-TEXTS += [(n, t, INK, 16) for n, t in TOPIC_TITLES]
+# section i = 1..10 (slides 5..44): shared INK titles + four BLUE kickers.
+# srf = surface title (banner + both pair slides) · st = standards title
+for i, S in enumerate(SURFACES, 1):
+    TEXTS.append((f"srf{i}", S, INK, 16))
+    TEXTS.append((f"st{i}", ST_TITLES[i - 1], INK, 16))
+    TEXTS.append((f"skb{i}", f"{S} · {i} OF 10", BLUE, 8))
+    TEXTS.append((f"sks{i}", f"{S} · {i} OF 10 · SPEC", BLUE, 8))
+    TEXTS.append((f"skc{i}", f"{S} · {i} OF 10 · CLAUDE + CODEX", BLUE, 8))
+    TEXTS.append((f"sko{i}", f"{S} · {i} OF 10 · OPENCODE + PI", BLUE, 8))
 
 
 def build_text(manifest):
@@ -131,8 +119,7 @@ def build_text(manifest):
             raise SystemExit(f"text {name}: unrenderable chars in {s!r}")
         info = ga.render([(s, col)], scale, os.path.join(ASSETS, name + ".png"))
         manifest[name] = {"w": info["w"], "h": info["h"]}
-    kick = sum(1 for n, _, _, _ in TEXTS if n.startswith("k") and n[1:].isdigit() and int(n[1:]) >= 4)
-    print(f"text: {len(TEXTS)} heading bitmaps ({kick} chapter kickers accent-colored)")
+    print(f"text: {len(TEXTS)} heading bitmaps (11 fixed + {len(SURFACES)} surface sections x 6)")
 
 
 # ---------- voxel art helpers (v4 pattern, unchanged) ----------
@@ -280,16 +267,6 @@ def verify(manifest):
         if not need <= got:
             fail(f"{name}: missing colors {need - got}")
     print("[3] art composition: PASS" if ok else "[3] see failures")
-
-    # every chapter kicker must be pure harness accent (chapter identity)
-    for ci, (cname, ccol) in enumerate(CHAPTERS):
-        for g in range(1, 6):
-            slide = 13 + ci * 5 + (g - 1)
-            img = Image.open(os.path.join(ASSETS, f"k{slide:02d}.png")).convert("RGBA")
-            got = {p[:3] for p in img.getdata() if p[3] != 0}
-            if got != {ccol}:
-                fail(f"k{slide:02d}: expected pure {ccol}, got {got}")
-    print("[4] chapter kicker accents: PASS" if ok else "[4] see failures")
 
     print(f"\nVERIFY: {'ALL PASS' if ok else 'FAILURES ABOVE'}")
     return ok
