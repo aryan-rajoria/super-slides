@@ -642,5 +642,86 @@ gets its own SECTION. Deck 33 → 45 slides, change made by 3 scope-fenced subag
 `nano-super-slides-v5/nano-super-registry-guide.pptx` (45 slides) + render/ +
 content/{4 harness, banners, standards, specs}.json + docs/slide-4.md.
 
+## v5.3 — data-model docs series (2026-10-21)
+
+User direction (mid-session pivot): "data model" means the ORG database — teams organized
+by Area of activity / Project / Functional unit — mapped onto agentic setups + feature
+registration; per-feature info organized as core / extras / original spec. Subagents again
+(user asked). 4 scoping questions answered: mapping + metadata registry (files stay in
+git/npm) · hierarchical most-specific-wins attach (area → FU → project → team) · open
+harness table seeded with the four (core model survives harness churn) · markdown + SQL DDL.
+
+### Structure
+`docs/data-model/`: `data-model.md` (series index + minimum-verdict matrix — matrix
+verdicts re-graded for MINIMUM: e.g. skills are COPY in all four, overlay only buys
+optional extras), `data-model-org.md` (org model: harness/surface/capability tables +
+`surface_field` core/extras/spec catalog, `agentic_setup` hierarchy, `artifact` registry,
+`feature_registration`, v_effective_setup + v_lockfile_export), `data-model-schema.sql`
+(14 tables / 7 enums / 2 views / 40 capability seeds; org tables are marked STUBs);
+`features/` = 10 per-surface docs — minimum portable core → per-harness materialization
+(exact transforms + field maps) → registry notes → "Original specification (reference)"
+appendix (verbatim spec fields, tiered).
+
+### Fresh verification (2 research subagents vs live docs, 2026-10-21)
+- OpenCode v2 plugins: `Plugin.define({id, setup(ctx)})` — v1 plugins do NOT run; hooks via
+  `ctx.tool.hook("execute.before"/"after")` (before may replace input or fail with
+  `Tool.Error` = veto), `ctx.permission.hook("evaluate")`, `ctx.session.hook("prompt"/"compaction")`;
+  no session-start/stop hooks; custom tools via `ctx.tool.transform` + `editor.add` with
+  JSON Schema (no Zod in v2); `opencode/slash` GONE in v2 (autoinvoke stays); `commands`
+  config is a MAP + `subagent` frontmatter (subtask deprecated); permissions[] `.env`
+  defaults are ASK not deny; v1 action `bash` → v2 `shell`.
+- Pi: `pi.on("tool_call")` runs BEFORE execution — `return {block, reason}` vetoes,
+  mutating `event.input` modifies args; `tool_result` = chained transform; `user_bash` can
+  intercept; `registerTool` TypeBox + exposure direct(default)/model-only/codemode/
+  deferred/hidden; MCP exposure default is codemode.
+These CORRECT the 2026-10-16 corpus (which carries v1-shaped OpenCode hook/tool facts) —
+deck banners/standards built from the corpus still show v1 shapes for OpenCode
+hooks/tools/commands; flag for a future deck revision pass.
+
+### Subagent split (this round)
+- 2 web-research agents (OpenCode v2, Pi) feeding fact packs; 1 doc writer (hooks +
+  custom-tools); 2 spec-appendix agents (5 + 3 files, disjoint); 1 DDL generator.
+- Files were reorganized mid-flight at user request (docs/data-model/ + features/);
+  remaining agents finished at docs/ root, files moved + all relative links rewritten
+  (node script verifies ALL RESOLVE).
+
+### Delivered (v5.3)
+`docs/data-model/{data-model.md, data-model-org.md, data-model-schema.sql,
+features/×10}` — deck itself unchanged (45 slides stand).
+
+## v5.4 — data-model.pptx companion deck (2026-10-21)
+
+User asked for a PPT of the data-model series with a professional theme. Plan-mode round
+(scope + theme via AskUserQuestion): org-model + matrix + feature pattern (~13-14 slides),
+light corporate. 14 slides: cover · two layers · minimum≠full-parity · minimum-verdict
+matrix · envelope+versioning · join points · 4 dimensions · field catalog · setup
+resolution + example · artifact registry · registration lifecycle · ER + four questions ·
+feature-doc pattern · closer (corrections/next).
+
+### Build
+- `build_dm.js` — NEW standalone generator, same pipeline (pptxgenjs 4.0.1 global via
+  NODE_PATH), ZERO sprites: pure native text/shapes, Segoe UI/Consolas, no bitmap headings,
+  no voxels, no hard shadows. Theme: BG FAFAF8 · INK 16181D · indigo 304FFE · hairlines
+  E2E4EA; verdict chips COPY green / COPY* green / TRANSLATE indigo / OVERLAY amber /
+  NO SURFACE gray; harness dots amber/green/blue/purple.
+- `verify_dm.ps1` (14 slides, no image requirement) + `export_pngs_dm.ps1` → render-dm/.
+  qa_scan_v5.py intentionally not reused (pixel-theme-pinned).
+- Gate: presentations:visual-judge 14 pages → 13/14 first pass (slide 3 chip rows overflowed
+  their cards — my 4×1.62" chips vs 7.55" card) → chips shrunk to 1.28" → re-judge PASS.
+  Final: 14/14.
+
+### Gotchas (new, this round)
+- **pptxgenjs negative-extent lines corrupt the file**: an arrow drawn right-to-left
+  (x2 < x1) emits a negative `<a:ext cx>` — PowerPoint then refuses to open the deck
+  (0x80004005 "could not open"; single-slide repro gave 0x80070570 "corrupted"). Fix:
+  normalize to min-corner + `flipH`/`flipV` in the arrow() helper. XML stays well-formed,
+  so zip/XML validation does NOT catch it — only bisect-by-slides + COM open does.
+- COM open failures right after `node` write in one command chain can be misleading —
+  always taskkill POWERPNT + sleep before judging a build result.
+
+### Delivered (v5.4)
+`nano-super-slides-v5/data-model.pptx` (14 slides, judge 14/14) + render-dm/ ×14 +
+build_dm.js + verify_dm.ps1 + export_pngs_dm.ps1.
+
 
 
